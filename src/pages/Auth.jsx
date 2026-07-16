@@ -14,8 +14,8 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
+  ShoppingBag,
 } from "lucide-react";
-
 export default function Auth() {
   const navigate = useNavigate();
   const { login } = useAuth();
