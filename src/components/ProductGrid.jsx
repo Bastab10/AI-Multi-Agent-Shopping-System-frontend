@@ -5,27 +5,25 @@ function ProductGrid({
   wishlist,
   toggleWishlist,
   onViewProduct,
+  compareProducts,
+  toggleCompare,
 }) {
   if (products.length === 0) return null;
 
   return (
-    <>
-      <h2 style={{ marginTop: "40px" }}>
-        🛍️ Products
-      </h2>
-
-      <div className="product-grid">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            wishlist={wishlist}
-            toggleWishlist={toggleWishlist}
-            onViewProduct={onViewProduct}
-          />
-        ))}
-      </div>
-    </>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          wishlist={wishlist}
+          toggleWishlist={toggleWishlist}
+          onViewProduct={onViewProduct}
+          compareProducts={compareProducts}
+          toggleCompare={toggleCompare}
+        />
+      ))}
+    </div>
   );
 }
 
