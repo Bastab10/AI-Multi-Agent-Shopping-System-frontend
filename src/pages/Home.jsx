@@ -20,37 +20,43 @@ import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-import Headphone from "../assets/headphone.jpg";
-import VR from "../assets/vr.jpg";
-import Laptop from "../assets/laptop.jpg";
+import Headphone from "../assets/headphone.png";
+import VR from "../assets/vr.png";
+import Laptop from "../assets/laptop.png";
+import Watch from "../assets/watch.png";
+import Phone from "../assets/phone.png";
 
 const HeroData = [
   {
     id: 1,
-    img: Headphone,
-    subtitle: "Beats Solo",
-    title: "Wireless",
-    title2: "HEADPHONE",
+    laptop: Laptop,
+    headphone: Headphone,
+    watch: Watch,
+    phone: Phone,
+    vr: VR,
+    subtitle: "AI Shopping Assistant",
+    title: "Smart",
+    title2: "SHOPPING",
     description:
-      "Experience premium sound quality with powerful bass, crystal-clear audio, and all-day comfort.",
+      "Search millions of products, compare prices instantly, and get AI-powered recommendations tailored to your needs.",
   },
   {
     id: 2,
     img: VR,
-    subtitle: "VR Gaming",
-    title: "Virtual",
-    title2: "REALITY",
+    subtitle: "Compare Before You Buy",
+    title: "AI",
+    title2: "COMPARISON",
     description:
-      "Step into immersive virtual worlds with AI-powered recommendations.",
+      "Compare features, prices, ratings, and reviews across multiple products to make the best buying decision.",
   },
   {
     id: 3,
     img: Laptop,
-    subtitle: "MacBook Pro",
-    title: "Powerful",
-    title2: "LAPTOP",
+    subtitle: "Find the Best Deals",
+    title: "Best",
+    title2: "OFFERS",
     description:
-      "Find the best laptop deals with smart AI comparison.",
+      "Discover trending products, exclusive discounts, and personalized recommendations powered by intelligent AI agents.",
   },
 ];
 
@@ -68,7 +74,9 @@ export default function Home() {
   });
   const [compareMessage, setCompareMessage] = useState("");
 
-  useEffect(() => { loadWishlist(); }, []);
+  useEffect(() => {
+    loadWishlist();
+  }, []);
   useEffect(() => {
     localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
   }, [compareProducts]);
@@ -90,7 +98,9 @@ export default function Home() {
   const toggleCompare = (product) => {
     const exists = compareProducts.find((i) => i.id === product.id);
     if (exists)
-      return setCompareProducts(compareProducts.filter((i) => i.id !== product.id));
+      return setCompareProducts(
+        compareProducts.filter((i) => i.id !== product.id),
+      );
 
     if (compareProducts.length >= 3) {
       setCompareMessage("Maximum 3 products can be compared.");
@@ -104,13 +114,13 @@ export default function Home() {
     try {
       setLoading(true);
       setError("");
-      setHistory((p) => [query, ...p.filter((i) => i !== query)].slice(0,5));
+      setHistory((p) => [query, ...p.filter((i) => i !== query)].slice(0, 5));
       const res = await api.get(`/products/search?q=${query}`);
       setProducts(res.data.products);
       setRecommendation(
         typeof res.data.recommendation === "string"
           ? JSON.parse(res.data.recommendation)
-          : res.data.recommendation
+          : res.data.recommendation,
       );
     } catch {
       setError("Something went wrong.");
@@ -138,11 +148,25 @@ export default function Home() {
           >
             {HeroData.map((data) => (
               <SwiperSlide key={data.id}>
-                <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 px-8 py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 px-5 sm:px-8 py-10">
+                  {" "}
                   <div>
-                    <p className="text-gray-500 font-semibold">{data.subtitle}</p>
+                    <p className="text-sm sm:text-base text-gray-500 font-semibold">
+                      {" "}
+                      {data.subtitle}
+                    </p>
                     <h1 className="text-5xl font-bold mt-3">{data.title}</h1>
-                    <h2 className="text-7xl font-black text-gray-200">{data.title2}</h2>
+                    <h2
+                      className="font-black text-gray-400
+               text-6xl
+               sm:text-5xl
+               md:text-6xl
+               lg:text-7xl
+               leading-none
+               break-words"
+                    >
+                      {data.title2}
+                    </h2>
                     <p className="text-gray-500 mt-4">{data.description}</p>
 
                     <div className="mt-6 max-w-lg">
@@ -163,12 +187,29 @@ export default function Home() {
                       </div>
                     )}
                   </div>
-
-                  <div className="flex justify-center">
+                  <div className="relative h-[520px] w-full overflow-hidden">
+                    {" "}
+                    {/* Background Circle */}
+                    <div className="absolute w-[420px] h-[420px] rounded-full bg-violet-200/40 right-16 top-12 blur-sm"></div>{" "}
+                    {/* Laptop */}
                     <img
-                      src={data.img}
-                      alt={data.title}
-                      className="w-[320px] md:w-[450px] object-contain"
+                      src={data.laptop}
+                      className="absolute left-24 top-24 w-[330px] -rotate-12 z-20 drop-shadow-2xl hover:scale-105 duration-300"
+                    />
+                    {/* Headphone */}
+                    <img
+                      src={data.headphone}
+                      className="absolute right-6 top-0 w-[230px] z-30 drop-shadow-2xl"
+                    />
+                    {/* Watch */}
+                    <img
+                      src={data.watch}
+                      className="absolute left-48 bottom-16 w-28 rotate-[-15deg] z-20"
+                    />
+                    {/* Phone */}
+                    <img
+                      src={data.phone}
+                      className="absolute right-6 bottom-0 w-36 rotate-[18deg] z-10"
                     />
                   </div>
                 </div>
