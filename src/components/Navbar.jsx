@@ -40,14 +40,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Search */}
-        <div className="hidden md:flex flex-1 max-w-[420px] relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-[18px] h-[18px]" />
-          <input
-            className="w-full h-11 rounded-full bg-gray-100 pl-11 pr-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-            placeholder="Search products..."
-          />
-        </div>
+       
 
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-7">
