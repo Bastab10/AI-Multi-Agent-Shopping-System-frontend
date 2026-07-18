@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, ShoppingBag, ArrowRight } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+import {
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ShoppingBag,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
+
 import { loginUser, registerUser } from "../services/authApi";
 import { useAuth } from "../context/AuthContext";
 
@@ -20,7 +29,10 @@ export default function Auth() {
   });
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +61,7 @@ export default function Auth() {
       }
 
       login(res.data.user, res.data.token);
+
       navigate("/");
     } catch (err) {
       alert(err.response?.data?.message || "Something went wrong");
@@ -56,97 +69,142 @@ export default function Auth() {
       setLoading(false);
     }
   };
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5000/api/auth/google";
+  };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#58C7B3] via-[#6fd7c6] to-[#9ee9dd] p-4">
+    <main className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        {" "}
+        {/* RIGHT SIDE */}
+        <section className="w-full">
+          <h2 className="text-4xl font-black text-gray-900">
+            {isLogin ? "Welcome Back" : "Create Account"}
+          </h2>
+          <p className="mt-2 text-gray-500">
+            {isLogin
+              ? "Sign in to continue to ShopIntel."
+              : "Create your free ShopIntel account."}
+          </p>{" "}
+          <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            {!isLogin && (
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={form.name}
+                onChange={handleChange}
+                className="w-full h-12 rounded-lg border border-gray-300 px-4 focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none"
+              />
+            )}
 
-      <section className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
-
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#58C7B3]">
-          <ShoppingBag className="text-white" />
-        </div>
-
-        <h1 className="mt-6 text-center text-4xl font-bold">
-          {isLogin ? "Login" : "Register"}
-        </h1>
-
-        <p className="mt-2 text-center text-gray-500">
-          Welcome to ShopIntel
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-
-          {!isLogin && (
             <input
-              className="w-full rounded-xl border p-3 outline-none focus:ring-2 focus:ring-[#58C7B3]"
-              placeholder="Full Name"
-              name="name"
-              value={form.name}
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={form.email}
               onChange={handleChange}
+              className="w-full rounded-2xl border border-gray-300 px-5 py-4 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
             />
-          )}
 
-          <input
-            className="w-full rounded-xl border p-3 outline-none focus:ring-2 focus:ring-[#58C7B3]"
-            type="email"
-            placeholder="Email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-          />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full rounded-2xl border border-gray-300 px-5 py-4 pr-12 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
+              />
 
-          <div className="relative">
-            <input
-              className="w-full rounded-xl border p-3 pr-11 outline-none focus:ring-2 focus:ring-[#58C7B3]"
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-            />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+            {!isLogin && (
+              <input
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                className="w-full rounded-2xl border border-gray-300 px-5 py-4 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
+              />
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+            >
+              {loading
+                ? "Please wait..."
+                : isLogin
+                  ? "Login"
+                  : "Create Account"}
+
+              <ArrowRight size={18} />
+            </button>
+
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+
+              <div className="relative flex justify-center">
+                <span className="bg-white px-4 text-sm text-gray-500">OR</span>
+              </div>
+            </div>
+
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              onClick={handleGoogleLogin}
+              className="w-full h-12 border border-gray-300 rounded-lg flex items-center justify-center gap-3 hover:bg-gray-50"
             >
-              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+              <FcGoogle size={22} />
+              Continue with Google
             </button>
-          </div>
+          </form>
+          <p className="mt-8 text-center text-gray-600">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}
 
-          {!isLogin && (
-            <input
-              className="w-full rounded-xl border p-3 outline-none focus:ring-2 focus:ring-[#58C7B3]"
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              name="confirmPassword"
-              value={form.confirmPassword}
-              onChange={handleChange}
-            />
-          )}
-
-          <button
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#58C7B3] py-3 font-semibold text-white transition hover:bg-[#46b9a8]"
-          >
-            {loading ? "Please wait..." : isLogin ? "Login" : "Create Account"}
-            <ArrowRight size={18}/>
-          </button>
-
-        </form>
-
-        <p className="mt-6 text-center text-sm">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}
-
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="ml-2 font-semibold text-[#58C7B3]"
-          >
-            {isLogin ? "Register" : "Login"}
-          </button>
-        </p>
-
-      </section>
-
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setForm({
+                  name: "",
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
+                });
+              }}
+              className="ml-2 font-semibold text-blue-600 hover:text-blue-700 hover:underline transition"
+            >
+              {isLogin ? "Create Account" : "Login"}
+            </button>
+          </p>
+          <p className="mt-8 text-center text-sm text-gray-400">
+            By continuing you agree to our
+            <span className="text-blue-600 cursor-pointer hover:underline">
+              {" "}
+              Terms of Service
+            </span>{" "}
+            and
+            <span className="text-blue-600 cursor-pointer hover:underline">
+              {" "}
+              Privacy Policy
+            </span>
+            .
+          </p>
+        </section>
+      </div>
     </main>
   );
 }

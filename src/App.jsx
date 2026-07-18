@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Wishlist from "./pages/Wishlist";
 import Compare from "./pages/Compare";
 import Auth from "./pages/Auth";
+import AuthSuccess from "./pages/AuthSuccess";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -12,9 +13,12 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Auth Page */}
+        {/* Auth Pages */}
         <Route path="/login" element={<Auth />} />
         <Route path="/register" element={<Auth />} />
+
+        {/* Google Callback */}
+        <Route path="/auth-success" element={<AuthSuccess />} />
 
         {/* Protected Routes */}
         <Route

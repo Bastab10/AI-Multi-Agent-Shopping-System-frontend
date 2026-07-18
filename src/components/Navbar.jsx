@@ -18,7 +18,13 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout, wishlistCount = 3, compareCount = 1 } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    logout,
+    wishlistCount = 3,
+    compareCount = 1,
+  } = useAuth();
 
   const nav = [
     { path: "/", label: "Home" },
@@ -40,8 +46,6 @@ export default function Navbar() {
           </span>
         </Link>
 
-       
-
         {/* Right side */}
         <div className="hidden lg:flex items-center gap-7">
           {nav.map((item) => (
@@ -57,24 +61,6 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
-
-          {/* Wishlist pill */}
-          <Link
-            to="/wishlist"
-            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full bg-blue-50 text-blue-600 font-bold text-[15px] hover:bg-blue-100 transition"
-          >
-            <Heart size={17} />
-            {wishlistCount}
-          </Link>
-
-          {/* Compare pill */}
-          <Link
-            to="/compare"
-            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full bg-blue-50 text-blue-600 font-bold text-[15px] hover:bg-blue-100 transition"
-          >
-            <Repeat2 size={17} />
-            {compareCount}
-          </Link>
 
           {isAuthenticated && (
             <div className="flex items-center gap-2.5 bg-gray-900 text-white rounded-full pl-2 pr-3.5 h-11 cursor-pointer select-none">
@@ -103,7 +89,10 @@ export default function Navbar() {
         </div>
 
         {/* Mobile toggle */}
-        <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden shrink-0">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="lg:hidden shrink-0"
+        >
           {menuOpen ? <X /> : <Menu />}
         </button>
       </div>
@@ -118,17 +107,25 @@ export default function Navbar() {
                 to={item.path}
                 onClick={() => setMenuOpen(false)}
                 className={`text-[15px] font-medium ${
-                  location.pathname === item.path ? "text-blue-600" : "text-gray-700"
+                  location.pathname === item.path
+                    ? "text-blue-600"
+                    : "text-gray-700"
                 }`}
               >
                 {item.label}
               </Link>
             ))}
             <div className="flex items-center gap-4 pt-2 border-t">
-              <Link to="/wishlist" className="flex items-center gap-1.5 text-blue-600 font-semibold text-sm">
+              <Link
+                to="/wishlist"
+                className="flex items-center gap-1.5 text-blue-600 font-semibold text-sm"
+              >
                 <Heart size={16} /> Wishlist ({wishlistCount})
               </Link>
-              <Link to="/compare" className="flex items-center gap-1.5 text-blue-600 font-semibold text-sm">
+              <Link
+                to="/compare"
+                className="flex items-center gap-1.5 text-blue-600 font-semibold text-sm"
+              >
                 <Repeat2 size={16} /> Compare ({compareCount})
               </Link>
             </div>

@@ -1,88 +1,117 @@
-import { X, Star, ShoppingCart, ExternalLink, Store, Award } from "lucide-react";
+import {
+  X,
+  Star,
+  ShoppingCart,
+  ExternalLink,
+  Store,
+} from "lucide-react";
 
 function ProductModal({ product, onClose }) {
   if (!product) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <div
-        className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in"
+        className="bg-white rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-bold text-text-primary">Product Details</h2>
-          <button 
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Product Details
+          </h2>
+
+          <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors duration-200"
+            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors"
           >
-            <X className="w-5 h-5 text-text-secondary" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="grid md:grid-cols-2 gap-10 p-8">
           {/* Image */}
-          <div className="relative">
-            <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100">
-              <img 
-                src={product.image} 
-                alt={product.title} 
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="bg-gray-50 rounded-2xl flex items-center justify-center p-8">
+            <img
+              src={product.image}
+              alt={product.title}
+              className="max-h-[420px] object-contain"
+            />
           </div>
 
-          {/* Content */}
+          {/* Details */}
           <div className="flex flex-col">
-            <h3 className="text-2xl font-bold text-text-primary mb-3">
+            <h3 className="text-3xl font-bold text-gray-900">
               {product.title}
             </h3>
 
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-1 text-yellow-500">
-                <Star className="w-5 h-5 fill-current" />
-                <span className="font-bold text-lg">{product.rating || "N/A"}</span>
-              </div>
-              <span className="text-text-secondary">({product.reviews || 0} reviews)</span>
+            <div className="flex items-center gap-3 mt-4">
+              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+
+              <span className="font-semibold">
+                {product.rating || "N/A"}
+              </span>
+
+              <span className="text-gray-500">
+                ({product.reviews || 0} reviews)
+              </span>
             </div>
 
-            <p className="text-4xl font-black text-primary-600 mb-6">
+            <p className="text-4xl font-bold text-blue-600 mt-6">
               ₹{product.price}
             </p>
 
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                <Store className="w-5 h-5 text-text-secondary" />
-                <div>
-                  <p className="text-sm text-text-secondary">Seller</p>
-                  <p className="font-semibold text-text-primary">{product.source || "N/A"}</p>
-                </div>
-              </div>
+            <div className="mt-8 rounded-2xl border border-gray-200 p-5">
+              <div className="flex items-center gap-3">
+                <Store className="w-5 h-5 text-gray-500" />
 
-              <div className="flex items-center gap-3 p-4 bg-primary-50 rounded-xl">
-                <Award className="w-5 h-5 text-primary-600" />
                 <div>
-                  <p className="text-sm text-text-secondary">AI Rating</p>
-                  <p className="font-semibold text-primary-600">Highly Recommended</p>
+                  <p className="text-sm text-gray-500">
+                    Seller
+                  </p>
+
+                  <p className="font-semibold">
+                    {product.source || "Unknown"}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-auto space-y-3">
+            {product.description && (
+              <div className="mt-8">
+                <h4 className="font-semibold text-lg mb-2">
+                  Description
+                </h4>
+
+                <p className="text-gray-600 leading-7">
+                  {product.description}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-auto flex gap-4 pt-10">
               <a
                 href={product.link}
                 target="_blank"
                 rel="noreferrer"
-                className="btn-primary w-full flex items-center justify-center gap-2 py-4 text-lg"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 flex items-center justify-center gap-2 transition-colors"
               >
                 <ShoppingCart className="w-5 h-5" />
                 Buy Now
               </a>
-              
-              <button className="btn-secondary w-full flex items-center justify-center gap-2 py-4 text-lg">
+
+              <a
+                href={product.link}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 border border-gray-300 rounded-xl py-4 flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+              >
                 <ExternalLink className="w-5 h-5" />
-                View on {product.source || "Store"}
-              </button>
+                Visit Store
+              </a>
             </div>
           </div>
         </div>

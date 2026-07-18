@@ -1,4 +1,4 @@
-import { Heart, GitCompare, Star, ShoppingCart, ExternalLink } from "lucide-react";
+import { Heart, Star, ShoppingCart, ExternalLink } from "lucide-react";
 
 function ProductCard({
   product,
@@ -8,91 +8,89 @@ function ProductCard({
   compareProducts,
   toggleCompare,
 }) {
-  const isWishlisted = wishlist.some(
-    (item) => item.productId === product.id
-  );
+  const isWishlisted = wishlist.some((item) => item.productId === product.id);
   const isCompared = compareProducts.some((item) => item.id === product.id);
 
   return (
-    <div 
-      className="card p-5 cursor-pointer group animate-fade-in"
+    <div
+      className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer"
       onClick={() => onViewProduct(product)}
     >
-      {/* Wishlist Button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleWishlist(product);
-        }}
-        className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:scale-110 transition-transform duration-300 z-10"
-      >
-        <Heart 
-          className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} 
-        />
-      </button>
-
-      {/* Product Image */}
-      <div className="relative mb-4 overflow-hidden rounded-xl bg-gray-100 aspect-square">
-        <img 
-          src={product.image} 
-          alt={product.title} 
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-      </div>
-
-      {/* Product Details */}
-      <h3 className="font-bold text-text-primary text-lg mb-2 line-clamp-2 h-14">
-        {product.title}
-      </h3>
-
-      <div className="flex items-center gap-2 mb-2">
-        <div className="flex items-center gap-1 text-yellow-500">
-          <Star className="w-4 h-4 fill-current" />
-          <span className="font-semibold text-sm">{product.rating || "N/A"}</span>
-        </div>
-        <span className="text-text-secondary text-sm">({product.reviews || 0} reviews)</span>
-      </div>
-
-      <p className="text-2xl font-black text-primary-600 mb-4">
-        ₹{product.price}
-      </p>
-
-      {/* Compare Checkbox */}
-      <label 
-        className="flex items-center gap-2 cursor-pointer mb-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <input
-          type="checkbox"
-          checked={isCompared}
-          onChange={() => toggleCompare(product)}
-          className="w-4 h-4 rounded border-border text-primary-600 focus:ring-primary-500"
-        />
-        <span className="text-sm font-medium text-text-secondary">Add to Compare</span>
-      </label>
-
-      {/* Action Buttons */}
-      <div className="flex gap-2">
-        <a
-          href={product.link}
-          target="_blank"
-          rel="noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="flex-1 btn-primary flex items-center justify-center gap-2 text-sm py-2.5"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          Buy Now
-        </a>
+      <div className="relative">
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onViewProduct(product);
+            toggleWishlist(product);
           }}
-          className="btn-secondary flex items-center justify-center gap-2 text-sm py-2.5"
+          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center"
         >
-          <ExternalLink className="w-4 h-4" />
-          Details
+          <Heart
+            className={`w-5 h-5 ${
+              isWishlisted ? "fill-red-500 text-red-500" : "text-gray-400"
+            }`}
+          />
         </button>
+
+        <div className="h-72 bg-gray-50 flex items-center justify-center p-6">
+          <img
+            src={product.image}
+            alt={product.title}
+            className="max-h-full object-contain"
+          />
+        </div>
+      </div>
+
+      <div className="p-5">
+        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 h-14">
+          {product.title}
+        </h3>
+
+        <div className="flex items-center gap-2 mt-3">
+          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+          <span className="text-sm font-medium">{product.rating || "N/A"}</span>
+          <span className="text-sm text-gray-500">
+            ({product.reviews || 0} reviews)
+          </span>
+        </div>
+
+        <p className="text-2xl font-bold text-blue-600 mt-3">
+          ₹{product.price}
+        </p>
+
+        <label
+          className="flex items-center gap-2 text-sm text-gray-600 mt-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <input
+            type="checkbox"
+            checked={isCompared}
+            onChange={() => toggleCompare(product)}
+          />
+          Add to Compare
+        </label>
+
+        <div className="flex gap-3 mt-5">
+          <a
+            href={product.link}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 flex items-center justify-center gap-2 transition-colors"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Buy Now
+          </a>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewProduct(product);
+            }}
+            className="px-4 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors flex items-center justify-center"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );

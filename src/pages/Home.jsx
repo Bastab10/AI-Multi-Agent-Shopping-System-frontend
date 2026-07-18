@@ -221,10 +221,10 @@ export default function Home() {
 
       <div className="container mx-auto px-4 py-10">
         {loading && (
-          <div className="flex items-center gap-2 text-blue-600 mb-6">
-            <Search className="animate-spin" size={20} />
-            Searching...
-          </div>
+         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 border border-violet-200 mb-6">
+  <Search className="animate-spin" size={18} />
+  <span className="font-medium">Searching...</span>
+</div>
         )}
 
         {error && (
