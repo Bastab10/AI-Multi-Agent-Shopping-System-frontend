@@ -70,7 +70,8 @@ export default function Auth() {
     }
   };
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href =
+      "https://ai-multi-agent-shopping-system.onrender.com/api/auth/google";
   };
 
   return (
