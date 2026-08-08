@@ -14,8 +14,6 @@ import {
 } from "../services/wishlistApi";
 
 import { motion } from "framer-motion";
-import profile from "../assets/profile.png";
-
 import {
   FaGithub,
   FaLinkedinIn,
