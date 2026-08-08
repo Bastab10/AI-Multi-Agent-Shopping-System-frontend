@@ -1,264 +1,125 @@
-// Home.jsx
-import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import SearchBar from "../components/SearchBar";
-import RecommendationCard from "../components/RecommendationCard";
-import ProductGrid from "../components/ProductGrid";
-import ProductModal from "../components/ProductModal";
-import api from "../services/api";
+import { motion } from "framer-motion";
 import {
-  getWishlist,
-  addToWishlist,
-  removeWishlistItem,
-} from "../services/wishlistApi";
+  FaGithub,
+  FaLinkedinIn,
+  FaEnvelope,
+  FaCode,
+  FaArrowRight,
+  FaDownload,
+} from "react-icons/fa";
 
-import { Search } from "lucide-react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
 
-import "swiper/css";
-import "swiper/css/pagination";
-
-import Headphone from "../assets/headphone.png";
-import VR from "../assets/vr.png";
-import Laptop from "../assets/laptop.png";
-import Watch from "../assets/watch.png";
-import Phone from "../assets/phone.png";
-
-const HeroData = [
-  {
-    id: 1,
-    laptop: Laptop,
-    headphone: Headphone,
-    watch: Watch,
-    phone: Phone,
-    vr: VR,
-    subtitle: "AI Shopping Assistant",
-    title: "Smart",
-    title2: "SHOPPING",
-    description:
-      "Search millions of products, compare prices instantly, and get AI-powered recommendations tailored to your needs.",
-  },
-  {
-    id: 2,
-    img: VR,
-    subtitle: "Compare Before You Buy",
-    title: "AI",
-    title2: "COMPARISON",
-    description:
-      "Compare features, prices, ratings, and reviews across multiple products to make the best buying decision.",
-  },
-  {
-    id: 3,
-    img: Laptop,
-    subtitle: "Find the Best Deals",
-    title: "Best",
-    title2: "OFFERS",
-    description:
-      "Discover trending products, exclusive discounts, and personalized recommendations powered by intelligent AI agents.",
-  },
-];
-
-export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [recommendation, setRecommendation] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [history, setHistory] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [wishlist, setWishlist] = useState([]);
-  const [compareProducts, setCompareProducts] = useState(() => {
-    const saved = localStorage.getItem("compareProducts");
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [compareMessage, setCompareMessage] = useState("");
-
-  useEffect(() => {
-    loadWishlist();
-  }, []);
-  useEffect(() => {
-    localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
-  }, [compareProducts]);
-
-  const loadWishlist = async () => {
-    try {
-      const res = await getWishlist();
-      setWishlist(res.data.data);
-    } catch {}
-  };
-
-  const toggleWishlist = async (product) => {
-    const exists = wishlist.find((i) => i.productId === product.id);
-    if (exists) await removeWishlistItem(exists._id);
-    else await addToWishlist(product);
-    loadWishlist();
-  };
-
-  const toggleCompare = (product) => {
-    const exists = compareProducts.find((i) => i.id === product.id);
-    if (exists)
-      return setCompareProducts(
-        compareProducts.filter((i) => i.id !== product.id),
-      );
-
-    if (compareProducts.length >= 3) {
-      setCompareMessage("Maximum 3 products can be compared.");
-      setTimeout(() => setCompareMessage(""), 3000);
-      return;
-    }
-    setCompareProducts([...compareProducts, product]);
-  };
-
-  const handleSearch = async (query) => {
-    try {
-      setLoading(true);
-      setError("");
-      setHistory((p) => [query, ...p.filter((i) => i !== query)].slice(0, 5));
-      const res = await api.get(`/products/search?q=${query}`);
-      setProducts(res.data.products);
-      setRecommendation(
-        typeof res.data.recommendation === "string"
-          ? JSON.parse(res.data.recommendation)
-          : res.data.recommendation,
-      );
-    } catch {
-      setError("Something went wrong.");
-      setProducts([]);
-      setRecommendation(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function Hero() {
   return (
-    <>
-      <Navbar
-        wishlistCount={wishlist.length}
-        compareCount={compareProducts.length}
-      />
+    <section
+      id="home"
+      className="relative overflow-hidden bg-[#F8F9FC] min-h-screen flex items-center"
+    >
+      {/* Background Glow */}
+      <div className="absolute top-32 right-20 w-[500px] h-[500px] rounded-full bg-violet-200/50 blur-3xl"></div>
 
-      <div className="container mx-auto py-10">
-        <div className="bg-gray-100 rounded-3xl overflow-hidden min-h-[600px] flex items-center">
-          <Swiper
-            modules={[Pagination]}
-            pagination={{ clickable: true }}
-            loop
-            className="w-full"
-          >
-            {HeroData.map((data) => (
-              <SwiperSlide key={data.id}>
-                <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-8 px-5 sm:px-8 py-10">
-                  {" "}
-                  <div>
-                    <p className="text-sm sm:text-base text-gray-500 font-semibold">
-                      {" "}
-                      {data.subtitle}
-                    </p>
-                    <h1 className="text-5xl font-bold mt-3">{data.title}</h1>
-                    <h2
-                      className="font-black text-gray-400
-               text-6xl
-               sm:text-5xl
-               md:text-6xl
-               lg:text-7xl
-               leading-none
-               break-words"
-                    >
-                      {data.title2}
-                    </h2>
-                    <p className="text-gray-500 mt-4">{data.description}</p>
+      <div className="max-w-7xl mx-auto w-full px-6 lg:px-12 grid lg:grid-cols-2 items-center gap-16">
 
-                    <div className="mt-6 max-w-lg">
-                      <SearchBar onSearch={handleSearch} loading={loading} />
-                    </div>
+        {/* Left */}
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: .7 }}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-[2px] bg-violet-500"></div>
+            <span className="uppercase tracking-[4px] text-sm font-semibold text-violet-600">
+              FULL STACK DEVELOPER
+            </span>
+          </div>
 
-                    {history.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        {history.map((item, i) => (
-                          <button
-                            key={i}
-                            onClick={() => handleSearch(item)}
-                            className="px-3 py-1 border rounded-full text-sm hover:bg-white"
-                          >
-                            {item}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="relative h-[520px] w-full overflow-hidden">
-                    {" "}
-                    {/* Background Circle */}
-                    <div className="absolute w-[420px] h-[420px] rounded-full bg-violet-200/40 right-16 top-12 blur-sm"></div>{" "}
-                    {/* Laptop */}
-                    <img
-                      src={data.laptop}
-                      className="absolute left-24 top-24 w-[330px] -rotate-12 z-20 drop-shadow-2xl hover:scale-105 duration-300"
-                    />
-                    {/* Headphone */}
-                    <img
-                      src={data.headphone}
-                      className="absolute right-6 top-0 w-[230px] z-30 drop-shadow-2xl"
-                    />
-                    {/* Watch */}
-                    <img
-                      src={data.watch}
-                      className="absolute left-48 bottom-16 w-28 rotate-[-15deg] z-20"
-                    />
-                    {/* Phone */}
-                    <img
-                      src={data.phone}
-                      className="absolute right-6 bottom-0 w-36 rotate-[18deg] z-10"
-                    />
-                  </div>
-                </div>
-              </SwiperSlide>
+          <h1 className="leading-none">
+            <span className="block text-6xl lg:text-7xl font-black text-slate-900">
+              Smart
+            </span>
+
+            <span className="block text-7xl lg:text-8xl font-black text-slate-300">
+              DEVELOPER
+            </span>
+          </h1>
+
+          <h2 className="mt-5 text-3xl font-bold text-slate-800">
+            Bastab Saikia
+          </h2>
+
+          <p className="mt-6 max-w-xl text-lg text-slate-500 leading-8">
+            I build scalable, modern and responsive web applications using
+            React, Node.js, Express and MongoDB with clean UI and powerful
+            backend architecture.
+          </p>
+
+          {/* Buttons */}
+          <div className="flex flex-wrap gap-5 mt-10">
+
+            <a
+              href="#projects"
+              className="flex items-center gap-3 bg-violet-600 hover:bg-violet-700 text-white px-7 py-4 rounded-2xl font-semibold transition"
+            >
+              View My Work
+              <FaArrowRight />
+            </a>
+
+            <a
+              href="/resume.pdf"
+              download
+              className="flex items-center gap-3 bg-white border border-gray-200 hover:border-violet-500 px-7 py-4 rounded-2xl font-semibold shadow-sm"
+            >
+              Resume
+              <FaDownload />
+            </a>
+
+          </div>
+
+          {/* Social */}
+          <div className="flex gap-5 mt-10">
+
+            {[
+              <FaGithub />,
+              <FaLinkedinIn />,
+              <FaEnvelope />,
+              <FaCode />,
+            ].map((icon, index) => (
+              <a
+                key={index}
+                href="/"
+                className="w-12 h-12 rounded-full bg-white shadow-lg hover:shadow-xl hover:-translate-y-1 duration-300 flex items-center justify-center text-slate-700"
+              >
+                {icon}
+              </a>
             ))}
-          </Swiper>
-        </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-10">
-        {loading && (
-         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 border border-violet-200 mb-6">
-  <Search className="animate-spin" size={18} />
-  <span className="font-medium">Searching...</span>
-</div>
-        )}
-
-        {error && (
-          <div className="bg-red-100 text-red-600 rounded-lg p-4 mb-6">
-            {error}
           </div>
-        )}
+        </motion.div>
 
-        {compareMessage && (
-          <div className="bg-yellow-100 text-yellow-700 rounded-lg p-4 mb-6">
-            {compareMessage}
-          </div>
-        )}
+        {/* Right */}
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: .7 }}
+          className="relative flex justify-center"
+        >
 
-        <RecommendationCard recommendation={recommendation} />
+          <div className="absolute w-[430px] h-[430px] rounded-full bg-violet-100 blur-2xl"></div>
 
-        <ProductGrid
-          products={products}
-          wishlist={wishlist}
-          toggleWishlist={toggleWishlist}
-          compareProducts={compareProducts}
-          toggleCompare={toggleCompare}
-          onViewProduct={setSelectedProduct}
-        />
-
-        {selectedProduct && (
-          <ProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+          <img
+            src={profile}
+            alt="Bastab"
+            className="relative z-10 w-[420px] animate-bounce"
+            style={{
+              animationDuration: "4s",
+            }}
           />
-        )}
-      </div>
 
-      <Footer />
-    </>
+        </motion.div>
+
+      </div>
+    </section>
   );
 }
+
+export default Hero;
