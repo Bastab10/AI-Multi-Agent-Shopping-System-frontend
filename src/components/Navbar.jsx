@@ -118,7 +118,7 @@ export default function Navbar() {
             <div className="flex items-center gap-4 pt-2 border-t">
               <Link
                 to="/wishlist"
-                className="flex items-center gap-1.5 text-blue-600 font-semibold text-sm"
+                className="flex items-center gap-1.5 text-blue-600 font-extralight text-sm"
               >
                 <Heart size={16} /> Wishlist ({wishlistCount})
               </Link>

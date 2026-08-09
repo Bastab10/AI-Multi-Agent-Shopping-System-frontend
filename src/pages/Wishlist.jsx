@@ -26,7 +26,7 @@ function Wishlist() {
 
       setWishlist(res.data.data);
     } catch (err) {
-      console.log(err);
+      // Error handling silently
     } finally {
       setLoading(false);
     }
@@ -37,7 +37,7 @@ function Wishlist() {
       await removeWishlistItem(id);
       loadWishlist();
     } catch (err) {
-      console.log(err);
+      // Error handling silently
     }
   };
 
@@ -52,7 +52,7 @@ function Wishlist() {
       await clearWishlist();
       loadWishlist();
     } catch (err) {
-      console.log(err);
+      // Error handling silently
     }
   };
 

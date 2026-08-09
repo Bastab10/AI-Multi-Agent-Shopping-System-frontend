@@ -7,14 +7,41 @@ export function AuthProvider({ children }) {
 
   // Load saved user on page refresh
   useEffect(() => {
+    const token = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
 
-    if (savedUser) {
+    if (!token || !savedUser) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      // Decode JWT payload
+      const payload = JSON.parse(atob(token.split(".")[1]));
+
+      // Check token expiry
+      const currentTime = Date.now() / 1000;
+
+      if (payload.exp && payload.exp < currentTime) {
+        // Token expired
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setUser(null);
+        return;
+      }
+
+      // Token still valid
       setUser(JSON.parse(savedUser));
+    } catch (error) {
+      console.error("Invalid token:", error);
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUser(null);
     }
   }, []);
 
-  // Login (Email + Google)
+  // Login
   const login = (userData, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(userData));

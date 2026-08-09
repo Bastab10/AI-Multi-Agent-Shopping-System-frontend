@@ -8,87 +8,124 @@ function ProductCard({
   compareProducts,
   toggleCompare,
 }) {
-  const isWishlisted = wishlist.some((item) => item.productId === product.id);
-  const isCompared = compareProducts.some((item) => item.id === product.id);
+  const isWishlisted = wishlist.some(
+    (item) => item.productId === product.id
+  );
+
+  const isCompared = compareProducts.some(
+    (item) => item.id === product.id
+  );
 
   return (
     <div
-      className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer"
+     className="relative bg-white rounded-xl border border-gray-200 
+shadow-sm hover:shadow-md 
+transition-shadow duration-200 overflow-hidden cursor-pointer"
       onClick={() => onViewProduct(product)}
     >
-      <div className="relative">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleWishlist(product);
-          }}
-          className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center"
-        >
-          <Heart
-            className={`w-5 h-5 ${
-              isWishlisted ? "fill-red-500 text-red-500" : "text-gray-400"
-            }`}
-          />
-        </button>
+      {/* Wishlist */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleWishlist(product);
+        }}
+        className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full 
+        bg-white border border-gray-200 shadow-sm 
+        flex items-center justify-center 
+        hover:bg-gray-50 transition"
+      >
+        <Heart
+          className={`w-4 h-4 ${
+            isWishlisted
+              ? "fill-red-500 text-red-500"
+              : "text-gray-400"
+          }`}
+        />
+      </button>
 
-        <div className="h-72 bg-gray-50 flex items-center justify-center p-6">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="max-h-full object-contain"
-          />
-        </div>
+      {/* Product Image */}
+      <div className="h-56 bg-gray-50 flex items-center justify-center p-5">
+        <img
+          src={product.image}
+          alt={product.title}
+          className="max-h-full max-w-full object-contain 
+          hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
-      <div className="p-5">
-        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 h-14">
+      {/* Product Details */}
+      <div className="p-4">
+        {/* Title */}
+        <h3
+          className="text-[15px] font-semibold text-gray-900 
+          leading-5 line-clamp-2 min-h-[40px]"
+        >
           {product.title}
         </h3>
 
-        <div className="flex items-center gap-2 mt-3">
-          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-          <span className="text-sm font-medium">{product.rating || "N/A"}</span>
-          <span className="text-sm text-gray-500">
-            ({product.reviews || 0} reviews)
+        {/* Rating */}
+        <div className="flex items-center gap-1.5 mt-2.5">
+          <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+
+          <span className="text-xs font-semibold text-gray-800">
+            {product.rating || "N/A"}
+          </span>
+
+          <span className="text-xs text-gray-400">
+            ({product.reviews || 0})
           </span>
         </div>
 
-        <p className="text-2xl font-bold text-blue-600 mt-3">
+        {/* Price */}
+        <p className="text-xl font-bold text-blue-600 mt-2">
           ₹{product.price}
         </p>
 
+        {/* Compare */}
         <label
-          className="flex items-center gap-2 text-sm text-gray-600 mt-4"
+          className="flex items-center gap-2 text-xs text-gray-500 
+          mt-3 cursor-pointer"
           onClick={(e) => e.stopPropagation()}
         >
           <input
             type="checkbox"
             checked={isCompared}
             onChange={() => toggleCompare(product)}
+            className="w-3.5 h-3.5 accent-blue-600"
           />
-          Add to Compare
+
+          <span>Add to Compare</span>
         </label>
 
-        <div className="flex gap-3 mt-5">
+        {/* Buttons */}
+        <div className="flex gap-2 mt-3">
+          {/* Buy Now */}
           <a
             href={product.link}
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 flex items-center justify-center gap-2 transition-colors"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 
+            text-white rounded-lg py-2 
+            text-sm font-medium
+            flex items-center justify-center gap-1.5
+            transition-colors"
           >
-            <ShoppingCart className="w-4 h-4" />
+            <ShoppingCart className="w-3.5 h-3.5" />
             Buy Now
           </a>
 
+          {/* View Product */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               onViewProduct(product);
             }}
-            className="px-4 border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors flex items-center justify-center"
+            className="w-10 border border-gray-300 rounded-lg 
+            hover:bg-gray-50 transition-colors 
+            flex items-center justify-center"
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-3.5 h-3.5 text-gray-600" />
           </button>
         </div>
       </div>
