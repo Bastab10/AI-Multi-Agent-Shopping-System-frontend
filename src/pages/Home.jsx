@@ -303,12 +303,8 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24">
 
           <Swiper
-            modules={[Pagination, Autoplay]}
+            modules={[Pagination,]}
             pagination={{ clickable: true }}
-            autoplay={{
-              delay: 5000,
-              disableOnInteraction: false,
-            }}
             loop={true}
             className="hero-swiper"
           >
@@ -435,9 +431,9 @@ export default function Home() {
                           <motion.img
                             src={Headphone}
                             alt="Headphone"
-                            animate={{
-                              y: [0, -15, 0],
-                            }}
+                            // animate={{
+                            //   y: [0, -15, 0],
+                            // }}
                             transition={{
                               duration: 3,
                               repeat: Infinity,
@@ -448,9 +444,9 @@ export default function Home() {
                           <motion.img
                             src={Watch}
                             alt="Watch"
-                            animate={{
-                              y: [0, 15, 0],
-                            }}
+                            // animate={{
+                            //   y: [0, 15, 0],
+                            // }}
                             transition={{
                               duration: 3.5,
                               repeat: Infinity,
@@ -461,9 +457,9 @@ export default function Home() {
                           <motion.img
                             src={Phone}
                             alt="Phone"
-                            animate={{
-                              y: [0, -12, 0],
-                            }}
+                            // animate={{
+                            //   y: [0, -12, 0],
+                            // }}
                             transition={{
                               duration: 4,
                               repeat: Infinity,
@@ -474,9 +470,9 @@ export default function Home() {
                           <motion.img
                             src={VR}
                             alt="VR"
-                            animate={{
-                              y: [0, 12, 0],
-                            }}
+                            // animate={{
+                            //   y: [0, 12, 0],
+                            // }}
                             transition={{
                               duration: 3.2,
                               repeat: Infinity,
