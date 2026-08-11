@@ -1,4 +1,9 @@
-import { Heart, Star, ShoppingCart, ExternalLink } from "lucide-react";
+import {
+  Heart,
+  Star,
+  ShoppingCart,
+  ExternalLink,
+} from "lucide-react";
 
 function ProductCard({
   product,
@@ -18,9 +23,15 @@ function ProductCard({
 
   return (
     <div
-     className="relative bg-white rounded-xl border border-gray-200 
-shadow-sm hover:shadow-md 
-transition-shadow duration-200 overflow-hidden cursor-pointer"
+      className="
+        relative
+        bg-white
+        rounded-xl
+        border border-gray-200
+        shadow-sm
+        overflow-hidden
+        cursor-pointer
+      "
       onClick={() => onViewProduct(product)}
     >
       {/* Wishlist */}
@@ -29,10 +40,17 @@ transition-shadow duration-200 overflow-hidden cursor-pointer"
           e.stopPropagation();
           toggleWishlist(product);
         }}
-        className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full 
-        bg-white border border-gray-200 shadow-sm 
-        flex items-center justify-center 
-        hover:bg-gray-50 transition"
+        className="
+          absolute top-3 right-3 z-10
+          w-8 h-8
+          rounded-full
+          bg-white
+          border border-gray-200
+          shadow-sm
+          flex items-center justify-center
+          hover:bg-gray-50
+          transition
+        "
       >
         <Heart
           className={`w-4 h-4 ${
@@ -44,28 +62,52 @@ transition-shadow duration-200 overflow-hidden cursor-pointer"
       </button>
 
       {/* Product Image */}
-      <div className="h-56 bg-gray-50 flex items-center justify-center p-5">
+      <div
+        className="
+          h-56
+          flex items-center justify-center
+          p-5
+          overflow-hidden
+        "
+      >
         <img
           src={product.image}
           alt={product.title}
-          className="max-h-full max-w-full object-contain 
-          hover:scale-105 transition-transform duration-300"
+          className="
+            max-h-full
+            max-w-full
+            object-contain
+            mix-blend-multiply
+          "
         />
       </div>
 
       {/* Product Details */}
       <div className="p-4">
+
         {/* Title */}
         <h3
-          className="text-[15px] font-semibold text-gray-900 
-          leading-5 line-clamp-2 min-h-[40px]"
+          className="
+            text-[15px]
+            font-semibold
+            text-gray-900
+            leading-5
+            line-clamp-2
+            min-h-[40px]
+          "
         >
           {product.title}
         </h3>
 
         {/* Rating */}
         <div className="flex items-center gap-1.5 mt-2.5">
-          <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+          <Star
+            className="
+              w-3.5 h-3.5
+              fill-yellow-400
+              text-yellow-400
+            "
+          />
 
           <span className="text-xs font-semibold text-gray-800">
             {product.rating || "N/A"}
@@ -77,21 +119,36 @@ transition-shadow duration-200 overflow-hidden cursor-pointer"
         </div>
 
         {/* Price */}
-        <p className="text-xl font-bold text-blue-600 mt-2">
-          ₹{product.price}
+        <p
+          className="
+            text-xl
+            font-bold
+            text-slate-900
+            mt-2
+          "
+        >
+          {product.price}
         </p>
 
         {/* Compare */}
         <label
-          className="flex items-center gap-2 text-xs text-gray-500 
-          mt-3 cursor-pointer"
+          className="
+            flex items-center gap-2
+            text-xs text-gray-500
+            mt-3
+            cursor-pointer
+          "
           onClick={(e) => e.stopPropagation()}
         >
           <input
             type="checkbox"
             checked={isCompared}
             onChange={() => toggleCompare(product)}
-            className="w-3.5 h-3.5 accent-blue-600"
+            className="
+              w-3.5 h-3.5
+              accent-blue-600
+              cursor-pointer
+            "
           />
 
           <span>Add to Compare</span>
@@ -99,17 +156,27 @@ transition-shadow duration-200 overflow-hidden cursor-pointer"
 
         {/* Buttons */}
         <div className="flex gap-2 mt-3">
+
           {/* Buy Now */}
           <a
             href={product.link}
             target="_blank"
             rel="noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 
-            text-white rounded-lg py-2 
-            text-sm font-medium
-            flex items-center justify-center gap-1.5
-            transition-colors"
+            className="
+              w-36
+              h-9
+              bg-slate-900
+              hover:bg-slate-800
+              text-white
+              rounded-full
+              text-xs
+              font-bold
+              flex items-center
+              justify-center
+              gap-1.5
+              transition-all duration-200
+            "
           >
             <ShoppingCart className="w-3.5 h-3.5" />
             Buy Now
@@ -121,12 +188,23 @@ transition-shadow duration-200 overflow-hidden cursor-pointer"
               e.stopPropagation();
               onViewProduct(product);
             }}
-            className="w-10 border border-gray-300 rounded-lg 
-            hover:bg-gray-50 transition-colors 
-            flex items-center justify-center"
+            className="
+              w-9 h-9
+              border border-gray-300
+              bg-white
+              rounded-full
+              hover:bg-gray-50
+              hover:border-gray-400
+              transition-all
+              flex items-center
+              justify-center
+            "
           >
-            <ExternalLink className="w-3.5 h-3.5 text-gray-600" />
+            <ExternalLink
+              className="w-3.5 h-3.5 text-gray-600"
+            />
           </button>
+
         </div>
       </div>
     </div>

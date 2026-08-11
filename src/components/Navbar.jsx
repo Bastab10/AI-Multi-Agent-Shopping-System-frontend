@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Search,
   UserRound,
   ChevronDown,
   LogOut,
@@ -9,137 +8,281 @@ import {
   X,
   Heart,
   Repeat2,
-  ShoppingBag,
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
+
   const {
     user,
     isAuthenticated,
     logout,
-    wishlistCount = 3,
-    compareCount = 1,
+    wishlistCount = 0,
+    compareCount = 0,
   } = useAuth();
 
   const nav = [
-    { path: "/", label: "Home" },
-    { path: "/wishlist", label: "Wishlist" },
-    { path: "/compare", label: "Compare" },
+    {
+      path: "/",
+      label: "Home",
+    },
+    {
+      path: "/wishlist",
+      label: "Wishlist",
+    },
+    {
+      path: "/compare",
+      label: "Compare",
+    },
   ];
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    navigate("/login");
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
-      <div className="max-w-screen-2xl mx-auto h-[76px] px-6 flex items-center justify-between gap-6">
-        {/* Logo */}
-        <Link to="/" className="logo-container">
-          <div className="logo-icon">
-            <ShoppingBag size={20} strokeWidth={2.4} className="text-white" />
-            <Sparkles size={12} className="logo-sparkle" />
+      <div className="max-w-screen-2xl mx-auto h-[68px] px-5 sm:px-6 flex items-center justify-between">
+
+        {/* ================= LOGO ================= */}
+        <Link
+          to="/"
+          className="flex items-center gap-2 shrink-0 group"
+        >
+          {/* Small Sparkle Logo */}
+          <div className="relative w-5 h-5 flex items-center justify-center">
+            <Sparkles
+              size={18}
+              strokeWidth={2}
+              className="text-gray-900 group-hover:text-blue-600 transition-colors"
+            />
           </div>
-          <span className="logo-text">
+
+          {/* Logo Text */}
+          <span className="text-[20px] font-medium tracking-tight text-gray-900">
             Shop<span className="text-blue-600">Intel</span>
           </span>
         </Link>
 
-        {/* Right side */}
-        <div className="hidden lg:flex items-center gap-7">
-          {nav.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`text-[16px] font-semibold tracking-tight transition-colors ${
-                location.pathname === item.path
-                  ? "text-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+        {/* ================= DESKTOP NAV ================= */}
+        <div className="hidden lg:flex items-center gap-3">
 
-          {isAuthenticated && (
-            <div className="flex items-center gap-2.5 bg-gray-900 text-white rounded-full pl-2 pr-3.5 h-11 cursor-pointer select-none">
-              <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
-                <UserRound size={15} />
-              </div>
-              <span className="text-[15px] font-semibold whitespace-nowrap">
-                {user?.name || "User"}
-              </span>
-              <ChevronDown size={16} className="text-gray-400" />
-            </div>
-          )}
+          {/* Navigation */}
+          {nav.map((item) => {
+            const isActive = location.pathname === item.path;
 
-          {isAuthenticated && (
-            <button
-              onClick={() => {
-                logout();
-                navigate("/login");
-              }}
-              className="bg-red-500 hover:bg-red-600 text-white rounded-full px-5 h-11 flex items-center gap-2 font-bold text-[15px] transition"
-            >
-              <LogOut size={17} />
-              Logout
-            </button>
-          )}
-        </div>
-
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="lg:hidden shrink-0"
-        >
-          {menuOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div className="lg:hidden border-t bg-white">
-          <div className="px-6 py-4 flex flex-col gap-4">
-            {nav.map((item) => (
+            return (
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => setMenuOpen(false)}
-                className={`text-[15px] font-medium ${
-                  location.pathname === item.path
-                    ? "text-blue-600"
-                    : "text-gray-700"
-                }`}
+                className={`
+                  px-2.5
+                  py-2
+                  text-[14px]
+                  font-medium
+                  transition-colors
+                  ${
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-600 hover:text-blue-600"
+                  }
+                `}
               >
                 {item.label}
               </Link>
-            ))}
-            <div className="flex items-center gap-4 pt-2 border-t">
+            );
+          })}
+
+          {/* ================= AUTH ================= */}
+          {isAuthenticated && (
+            <div className="flex items-center gap-2 ml-2">
+
+              {/* Compact Logout */}
+              <button
+                onClick={handleLogout}
+                title="Logout"
+                className="
+                  w-9 h-9
+                  rounded-full
+                  bg-red-50
+                  text-red-500
+                  flex items-center justify-center
+                  hover:bg-red-100
+                  hover:text-red-600
+                  transition-colors
+                "
+              >
+                <LogOut
+                  size={16}
+                  strokeWidth={2.2}
+                />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ================= MOBILE BUTTON ================= */}
+        <button
+          onClick={() => setMenuOpen((prev) => !prev)}
+          className="
+            lg:hidden
+            w-9 h-9
+            rounded-lg
+            flex items-center justify-center
+            text-gray-700
+            hover:bg-gray-100
+            transition
+          "
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? (
+            <X size={21} />
+          ) : (
+            <Menu size={21} />
+          )}
+        </button>
+      </div>
+
+      {/* ================= MOBILE MENU ================= */}
+      {menuOpen && (
+        <div className="lg:hidden border-t border-gray-100 bg-white">
+          <div className="px-5 sm:px-6 py-4 flex flex-col gap-2">
+
+            {/* Navigation Links */}
+            {nav.map((item) => {
+              const isActive =
+                location.pathname === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMenuOpen(false)}
+                  className={`
+                    flex items-center justify-between
+                    px-4 py-3
+                    rounded-xl
+                    text-[14px]
+                    font-medium
+                    transition
+                    ${
+                      isActive
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }
+                  `}
+                >
+                  <span>{item.label}</span>
+
+                  {item.path === "/wishlist" && (
+                    <span className="text-xs text-gray-400">
+                      {wishlistCount}
+                    </span>
+                  )}
+
+                  {item.path === "/compare" && (
+                    <span className="text-xs text-gray-400">
+                      {compareCount}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+
+            {/* Wishlist + Compare */}
+            <div className="flex items-center gap-3 pt-3 mt-2 border-t border-gray-100">
+
               <Link
                 to="/wishlist"
-                className="flex items-center gap-1.5 text-blue-600 font-extralight text-sm"
+                onClick={() => setMenuOpen(false)}
+                className="
+                  flex-1
+                  h-9
+                  rounded-lg
+                  bg-gray-50
+                  hover:bg-blue-50
+                  text-gray-700
+                  hover:text-blue-600
+                  flex items-center justify-center gap-1.5
+                  text-xs
+                  font-medium
+                  transition
+                "
               >
-                <Heart size={16} /> Wishlist ({wishlistCount})
+                <Heart size={15} />
+                Wishlist ({wishlistCount})
               </Link>
+
               <Link
                 to="/compare"
-                className="flex items-center gap-1.5 text-blue-600 font-semibold text-sm"
+                onClick={() => setMenuOpen(false)}
+                className="
+                  flex-1
+                  h-9
+                  rounded-lg
+                  bg-gray-50
+                  hover:bg-blue-50
+                  text-gray-700
+                  hover:text-blue-600
+                  flex items-center justify-center gap-1.5
+                  text-xs
+                  font-medium
+                  transition
+                "
               >
-                <Repeat2 size={16} /> Compare ({compareCount})
+                <Repeat2 size={15} />
+                Compare ({compareCount})
               </Link>
             </div>
+
+            {/* Mobile User */}
             {isAuthenticated && (
-              <button
-                onClick={() => {
-                  logout();
-                  navigate("/login");
-                }}
-                className="bg-red-500 text-white rounded-full px-5 h-11 flex items-center justify-center gap-2 font-semibold text-sm mt-2"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
+              <>
+                <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
+
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                    <UserRound size={15} />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-900">
+                      {user?.name || "User"}
+                    </span>
+
+                    <span className="text-[11px] text-gray-400">
+                      Account
+                    </span>
+                  </div>
+                </div>
+
+                {/* Mobile Logout */}
+                <button
+                  onClick={handleLogout}
+                  className="
+                    w-full
+                    h-9
+                    mt-2
+                    rounded-lg
+                    bg-red-50
+                    text-red-500
+                    hover:bg-red-100
+                    flex items-center justify-center gap-2
+                    text-xs
+                    font-semibold
+                    transition
+                  "
+                >
+                  <LogOut size={15} />
+                  Logout
+                </button>
+              </>
             )}
           </div>
         </div>

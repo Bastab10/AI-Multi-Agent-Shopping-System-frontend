@@ -4,9 +4,13 @@ import {
   Sparkles,
   ExternalLink,
   ShoppingCart,
+  Star,
 } from "lucide-react";
 
-function RecommendationCard({ recommendation }) {
+function RecommendationCard({
+  recommendation,
+  products = [],
+}) {
   if (!recommendation) return null;
 
   const cards = [
@@ -14,158 +18,368 @@ function RecommendationCard({ recommendation }) {
       icon: Award,
       title: "Best Overall",
       subtitle: "Top Pick",
-      color: "bg-purple-600",
+      color: "bg-slate-900",
       data: recommendation.best_overall,
     },
     {
       icon: DollarSign,
       title: "Best Budget",
       subtitle: "Value for Money",
-      color: "bg-green-600",
+      color: "bg-blue-600",
       data: recommendation.best_budget,
     },
     {
       icon: Sparkles,
       title: "Premium Choice",
       subtitle: "High-End",
-      color: "bg-orange-500",
+      color: "bg-slate-700",
       data: recommendation.premium_choice,
     },
   ];
 
+  // Find original product from search results
+  const findOriginalProduct = (recommendedProduct) => {
+    if (!recommendedProduct || !products?.length) {
+      return null;
+    }
+
+    const recommendedTitle =
+      recommendedProduct.title?.toLowerCase()?.trim();
+
+    if (!recommendedTitle) {
+      return null;
+    }
+
+    // Exact title match
+    const exactMatch = products.find(
+      (product) =>
+        product.title?.toLowerCase()?.trim() ===
+        recommendedTitle
+    );
+
+    if (exactMatch) {
+      return exactMatch;
+    }
+
+    // Partial title match
+    const partialMatch = products.find((product) => {
+      const title = product.title?.toLowerCase()?.trim();
+
+      return (
+        title?.includes(recommendedTitle) ||
+        recommendedTitle?.includes(title)
+      );
+    });
+
+    return partialMatch || null;
+  };
+
   return (
-    <section className="mb-10">
-      {/* Section Header */}
-      <div className="mb-5">
-        <div className="flex items-center gap-2.5">
+    <section className="w-full">
+
+      {/* ================= HEADER ================= */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+
           <div
-            className="w-9 h-9 rounded-xl bg-blue-50
-            border border-blue-100 flex items-center justify-center"
+            className="
+              w-9 h-9
+              rounded-full
+              bg-indigo-50
+              text-indigo-600
+              flex items-center justify-center
+              shrink-0
+            "
           >
-            <Sparkles className="w-[18px] h-[18px] text-blue-600" />
+            <Sparkles size={16} />
           </div>
 
           <div>
-            <h2
-              className="text-2xl md:text-[27px] font-bold
-              tracking-[-0.02em] text-gray-900 leading-tight"
-            >
+            <h2 className="text-xl font-bold tracking-tight text-gray-900">
               AI Recommendations
             </h2>
+
+            <p className="mt-1 text-[11px] text-gray-500">
+              Personalized picks selected by AI based on price,
+              value and quality.
+            </p>
           </div>
         </div>
 
-        <p className="mt-1.5 ml-[47px] text-sm text-gray-500">
-          Personalized picks selected by AI based on price, value and quality.
-        </p>
+        <button
+          type="button"
+          className="
+            hidden sm:flex
+            items-center gap-1
+            px-3 py-1.5
+            rounded-full
+            border border-gray-200
+            bg-white
+            text-[10px]
+            font-semibold
+            text-blue-600
+          "
+        >
+          View all recommendations
+          <ExternalLink size={11} />
+        </button>
       </div>
 
-      {/* Recommendation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* ================= CARDS ================= */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+
         {cards.map((card, index) => {
           const Icon = card.icon;
           const product = card.data;
 
+          if (!product) return null;
+
+          // Original product from search results
+          const originalProduct =
+            findOriginalProduct(product);
+
+          // Actual image from original search result
+          const productImage =
+            originalProduct?.image ||
+            product?.image ||
+            product?.thumbnail ||
+            product?.imageUrl ||
+            null;
+
+          // Use original link if AI recommendation
+          // does not contain one
+          const productLink =
+            product?.link ||
+            originalProduct?.link ||
+            null;
+
+          // Use original rating/reviews if available
+          const rating =
+            originalProduct?.rating ||
+            product?.rating ||
+            "4.8";
+
+          const reviews =
+            originalProduct?.reviews ||
+            product?.reviews ||
+            0;
+
           return (
             <div
               key={index}
-              className="group bg-white rounded-xl
-              border border-gray-200
-              shadow-sm hover:shadow-md
-              transition-shadow duration-200
-              overflow-hidden"
+              className="
+                w-full
+                bg-white
+                rounded-xl
+                border border-gray-200
+                overflow-hidden
+              "
             >
-              <div className="p-4">
-                {/* Badge */}
+              <div className="p-3">
+
+                {/* ================= BADGE ================= */}
                 <div
-                  className={`inline-flex items-center gap-1.5
-                  px-2.5 py-1 rounded-full
-                  text-white text-[11px] font-semibold
-                  ${card.color}`}
+                  className={`
+                    inline-flex
+                    items-center
+                    gap-1
+                    px-2
+                    py-1
+                    rounded-full
+                    text-white
+                    text-[9px]
+                    font-semibold
+                    ${card.color}
+                  `}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon size={10} />
                   {card.title}
                 </div>
 
-                {/* Product Title */}
-                <h3
-                  className="mt-3.5 text-[16px] font-semibold
-                  text-gray-900 leading-[1.35]
-                  line-clamp-2 min-h-[43px]"
-                >
-                  {product?.title || "Product not available"}
-                </h3>
+                {/* ================= PRODUCT ================= */}
+                <div className="flex gap-3 mt-3">
 
-                {/* Category */}
-                <p className="mt-1 text-xs text-gray-400 font-medium">
-                  {card.subtitle}
-                </p>
+                  {/* ================= IMAGE ================= */}
+                  <div
+                    className="
+                      w-[82px]
+                      h-[92px]
+                      shrink-0
+                      rounded-lg
+                      bg-gray-50
+                      flex items-center justify-center
+                      overflow-hidden
+                    "
+                  >
+                    {productImage ? (
+                      <img
+                        src={productImage}
+                        alt={
+                          product.title ||
+                          "Product"
+                        }
+                        className="
+                          w-full
+                          h-full
+                          object-contain
+                          p-2
+                          mix-blend-multiply
+                        "
+                        onError={(e) => {
+                          e.currentTarget.style.display =
+                            "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center px-2">
+                        <ShoppingCart
+                          size={18}
+                          className="text-gray-300"
+                        />
 
-                {/* Price */}
-                <div className="mt-2.5">
-                  <span className="text-[23px] font-bold tracking-tight text-blue-600">
-                    {product?.price || "N/A"}
-                  </span>
+                        <span className="mt-1 text-[8px] text-gray-400">
+                          Image unavailable
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ================= DETAILS ================= */}
+                  <div className="min-w-0 flex-1">
+
+                    {/* Title */}
+                    <h3
+                      className="
+                        text-[13px]
+                        font-semibold
+                        text-gray-900
+                        leading-[17px]
+                        line-clamp-2
+                      "
+                    >
+                      {product.title ||
+                        "Product not available"}
+                    </h3>
+
+                    {/* Subtitle */}
+                    <p className="mt-1 text-[10px] text-gray-400">
+                      {card.subtitle}
+                    </p>
+
+                    {/* Price */}
+                    <p
+                      className="
+                        mt-1.5
+                        text-[18px]
+                        font-bold
+                        tracking-tight
+                        text-slate-900
+                      "
+                    >
+                      {product.price || "N/A"}
+                    </p>
+
+                    {/* Rating */}
+                    <div className="flex items-center gap-1 mt-1">
+
+                      <Star
+                        size={11}
+                        className="text-yellow-500"
+                        fill="currentColor"
+                      />
+
+                      <span className="text-[10px] font-semibold text-gray-700">
+                        {rating}
+                      </span>
+
+                      {reviews > 0 && (
+                        <span className="text-[9px] text-gray-400">
+                          ({reviews})
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Explanation */}
+                {/* ================= EXPLANATION ================= */}
                 <p
-                  className="mt-2.5 text-[13px] text-gray-500
-                  leading-[1.45] line-clamp-2 min-h-[38px]"
+                  className="
+                    mt-2
+                    text-[10px]
+                    leading-4
+                    text-gray-400
+                    line-clamp-1
+                  "
                 >
-                  {product?.explanation ||
-                    "No explanation available for this recommendation."}
+                  {product.explanation ||
+                    "Recommended based on price, value and quality."}
                 </p>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 mt-4">
-                  {product?.link ? (
-                    <>
-                      {/* Buy Now */}
-                      <a
-                        href={product.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center
-                        gap-1.5 px-4 py-2
-                        bg-blue-600 hover:bg-blue-700
-                        text-white rounded-lg
-                        text-xs font-semibold
-                        transition-colors duration-200"
-                      >
-                        <ShoppingCart className="w-3.5 h-3.5" />
-                        Buy Now
-                      </a>
+                {/* ================= ACTIONS ================= */}
+                <div className="flex items-center gap-2 mt-3">
 
-                      {/* External Link */}
-                      <a
-                        href={product.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-8 h-8
-                        border border-gray-200
-                        rounded-lg
-                        hover:bg-gray-50
-                        flex items-center justify-center
-                        transition-colors duration-200"
-                        title="View Product"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5 text-gray-500" />
-                      </a>
-                    </>
+                  {/* BUY NOW */}
+                  {productLink ? (
+                    <a
+                      href={productLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="
+                        h-8
+                        px-3
+                        bg-slate-900
+                        text-white
+                        rounded-full
+                        text-[10px]
+                        font-bold
+                        flex items-center
+                        justify-center
+                        gap-1.5
+                      "
+                    >
+                      <ShoppingCart size={11} />
+                      Buy Now
+                    </a>
                   ) : (
                     <button
+                      type="button"
                       disabled
-                      className="inline-flex items-center
-                      justify-center gap-1.5
-                      px-4 py-2
-                      bg-gray-100 text-gray-400
-                      rounded-lg text-xs font-semibold
-                      cursor-not-allowed"
+                      className="
+                        h-8
+                        px-3
+                        bg-gray-100
+                        text-gray-400
+                        rounded-full
+                        text-[10px]
+                        font-semibold
+                      "
                     >
-                      <ShoppingCart className="w-3.5 h-3.5" />
                       Link Unavailable
                     </button>
+                  )}
+
+                  {/* EXTERNAL LINK */}
+                  {productLink && (
+                    <a
+                      href={productLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="View Product"
+                      className="
+                        w-8
+                        h-8
+                        rounded-full
+                        border border-gray-300
+                        bg-white
+                        flex items-center
+                        justify-center
+                      "
+                    >
+                      <ExternalLink
+                        size={12}
+                        className="text-gray-600"
+                      />
+                    </a>
                   )}
                 </div>
               </div>

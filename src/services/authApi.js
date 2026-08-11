@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://ai-multi-agent-shopping-system.onrender.com/api",
+    baseURL: "https://ai-multi-agent-shopping-system.onrender.com/api",
+    // baseURL: "http://localhost:5000/api",
 });
 
 export const registerUser = (data) =>
