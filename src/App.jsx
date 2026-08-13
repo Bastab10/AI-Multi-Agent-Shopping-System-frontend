@@ -12,15 +12,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Auth Pages */}
         <Route path="/login" element={<Auth />} />
         <Route path="/register" element={<Auth />} />
 
-        {/* Google Callback */}
         <Route path="/auth-success" element={<AuthSuccess />} />
-
-        {/* Protected Routes */}
+        
         <Route
           path="/"
           element={

@@ -78,7 +78,6 @@ export default function Auth() {
     <main className="min-h-screen bg-white flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {" "}
-        {/* RIGHT SIDE */}
         <section className="w-full">
           <h2 className="text-4xl font-black text-gray-900">
             {isLogin ? "Welcome Back" : "Create Account"}

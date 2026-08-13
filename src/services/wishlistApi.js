@@ -1,12 +1,11 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://ai-multi-agent-shopping-system.onrender.com/api",
-
   // baseURL: "http://localhost:5000/api",
+
+  baseURL: "https://ai-multi-agent-shopping-system.onrender.com/api",
 });
 
-// Add JWT Token Automatically
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
@@ -17,12 +16,10 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Get Wishlist
 export const getWishlist = () => {
   return API.get("/wishlist");
 };
 
-// Add Product
 export const addToWishlist = (product) => {
   return API.post("/wishlist", {
     productId: product.id,
@@ -35,12 +32,10 @@ export const addToWishlist = (product) => {
   });
 };
 
-// Remove Product
 export const removeWishlistItem = (id) => {
   return API.delete(`/wishlist/${id}`);
 };
 
-// Clear Wishlist
 export const clearWishlist = () => {
   return API.delete("/wishlist");
 };

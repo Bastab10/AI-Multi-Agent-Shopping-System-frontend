@@ -7,10 +7,7 @@ import {
   Star,
 } from "lucide-react";
 
-function RecommendationCard({
-  recommendation,
-  products = [],
-}) {
+function RecommendationCard({ recommendation, products = [] }) {
   if (!recommendation) return null;
 
   const cards = [
@@ -20,6 +17,7 @@ function RecommendationCard({
       subtitle: "Top Pick",
       color: "bg-slate-900",
       data: recommendation.best_overall,
+      explanation: "Highest rated product with strong customer reviews.",
     },
     {
       icon: DollarSign,
@@ -27,6 +25,7 @@ function RecommendationCard({
       subtitle: "Value for Money",
       color: "bg-blue-600",
       data: recommendation.best_budget,
+      explanation: "Lowest priced product among the available results.",
     },
     {
       icon: Sparkles,
@@ -34,40 +33,28 @@ function RecommendationCard({
       subtitle: "High-End",
       color: "bg-slate-700",
       data: recommendation.premium_choice,
+      explanation: "Most premium and highest priced product in the results.",
     },
   ];
 
-  // Find original product from search results
   const findOriginalProduct = (recommendedProduct) => {
-    if (!recommendedProduct || !products?.length) {
-      return null;
-    }
+    if (!recommendedProduct || !products?.length) return null;
 
-    const recommendedTitle =
-      recommendedProduct.title?.toLowerCase()?.trim();
+    const recommendedTitle = recommendedProduct.title?.toLowerCase()?.trim();
 
-    if (!recommendedTitle) {
-      return null;
-    }
-
-    // Exact title match
+    if (!recommendedTitle) return null;
     const exactMatch = products.find(
-      (product) =>
-        product.title?.toLowerCase()?.trim() ===
-        recommendedTitle
+      (product) => product.title?.toLowerCase()?.trim() === recommendedTitle,
     );
 
-    if (exactMatch) {
-      return exactMatch;
-    }
-
-    // Partial title match
+    if (exactMatch) return exactMatch;
     const partialMatch = products.find((product) => {
       const title = product.title?.toLowerCase()?.trim();
 
+      if (!title) return false;
+
       return (
-        title?.includes(recommendedTitle) ||
-        recommendedTitle?.includes(title)
+        title.includes(recommendedTitle) || recommendedTitle.includes(title)
       );
     });
 
@@ -76,32 +63,34 @@ function RecommendationCard({
 
   return (
     <section className="w-full">
-
-      {/* ================= HEADER ================= */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-
-          <div
-            className="
-              w-9 h-9
-              rounded-full
-              bg-indigo-50
-              text-indigo-600
-              flex items-center justify-center
-              shrink-0
-            "
-          >
-            <Sparkles size={16} />
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-gray-900">
+      <div className="mb-6">
+        <div className="flex items-start gap-3">
+          <div className="min-w-0">
+            <h2
+              className="
+                text-2xl
+                sm:text-xl
+                font-bold
+                tracking-tight
+                text-gray-900
+                leading-tight
+              "
+            >
               AI Recommendations
             </h2>
 
-            <p className="mt-1 text-[11px] text-gray-500">
-              Personalized picks selected by AI based on price,
-              value and quality.
+            <p
+              className="
+                mt-1.5
+                text-sm
+                sm:text-[11px]
+                leading-5
+                text-gray-500
+                max-w-xl
+              "
+            >
+              Personalized picks selected by AI based on price, value and
+              quality.
             </p>
           </div>
         </div>
@@ -109,36 +98,52 @@ function RecommendationCard({
         <button
           type="button"
           className="
-            hidden sm:flex
-            items-center gap-1
-            px-3 py-1.5
+            mt-4
+            w-full
+            sm:w-auto
+            sm:float-right
+            sm:-mt-10
+            flex
+            items-center
+            justify-center
+            gap-2
+            px-4
+            py-2.5
             rounded-full
-            border border-gray-200
+            border
+            border-gray-200
             bg-white
-            text-[10px]
+            text-sm
+            sm:text-[11px]
             font-semibold
             text-blue-600
+            hover:bg-blue-50
+            transition
           "
         >
           View all recommendations
-          <ExternalLink size={11} />
+          <ExternalLink size={14} />
         </button>
+
+        <div className="clear-both" />
       </div>
 
-      {/* ================= CARDS ================= */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-
+      <div
+        className="
+          grid
+          grid-cols-1
+          md:grid-cols-3
+          gap-4
+        "
+      >
         {cards.map((card, index) => {
           const Icon = card.icon;
           const product = card.data;
 
           if (!product) return null;
 
-          // Original product from search results
-          const originalProduct =
-            findOriginalProduct(product);
+          const originalProduct = findOriginalProduct(product);
 
-          // Actual image from original search result
           const productImage =
             originalProduct?.image ||
             product?.image ||
@@ -146,78 +151,60 @@ function RecommendationCard({
             product?.imageUrl ||
             null;
 
-          // Use original link if AI recommendation
-          // does not contain one
-          const productLink =
-            product?.link ||
-            originalProduct?.link ||
-            null;
+          const productLink = product?.link || originalProduct?.link || null;
 
-          // Use original rating/reviews if available
-          const rating =
-            originalProduct?.rating ||
-            product?.rating ||
-            "4.8";
+          const rating = originalProduct?.rating || product?.rating || "4.8";
 
-          const reviews =
-            originalProduct?.reviews ||
-            product?.reviews ||
-            0;
+          const reviews = originalProduct?.reviews || product?.reviews || 0;
 
           return (
-            <div
+            <article
               key={index}
               className="
                 w-full
                 bg-white
-                rounded-xl
-                border border-gray-200
+                rounded-2xl
+                border
+                border-gray-200
                 overflow-hidden
+                shadow-[0_2px_10px_rgba(15,23,42,0.04)]
               "
             >
-              <div className="p-3">
+              <div className="p-4 sm:p-4">
+                <div className="mb-4">
+                  <h3 className="text-sm sm:text-[13px] font-bold text-gray-900">
+                    {card.title}
+                  </h3>
 
-                {/* ================= BADGE ================= */}
-                <div
-                  className={`
-                    inline-flex
-                    items-center
-                    gap-1
-                    px-2
-                    py-1
-                    rounded-full
-                    text-white
-                    text-[9px]
-                    font-semibold
-                    ${card.color}
-                  `}
-                >
-                  <Icon size={10} />
-                  {card.title}
+                 
                 </div>
 
-                {/* ================= PRODUCT ================= */}
-                <div className="flex gap-3 mt-3">
-
-                  {/* ================= IMAGE ================= */}
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-4
+                  "
+                >
                   <div
                     className="
-                      w-[82px]
-                      h-[92px]
+                      w-[112px]
+                      h-[112px]
+                      sm:w-[82px]
+                      sm:h-[92px]
                       shrink-0
-                      rounded-lg
+                      rounded-xl
                       bg-gray-50
-                      flex items-center justify-center
+                      flex
+                      items-center
+                      justify-center
                       overflow-hidden
                     "
                   >
                     {productImage ? (
                       <img
                         src={productImage}
-                        alt={
-                          product.title ||
-                          "Product"
-                        }
+                        alt={product.title || "Product"}
                         className="
                           w-full
                           h-full
@@ -226,51 +213,65 @@ function RecommendationCard({
                           mix-blend-multiply
                         "
                         onError={(e) => {
-                          e.currentTarget.style.display =
-                            "none";
+                          e.currentTarget.style.display = "none";
                         }}
                       />
                     ) : (
-                      <div className="flex flex-col items-center justify-center text-center px-2">
-                        <ShoppingCart
-                          size={18}
-                          className="text-gray-300"
-                        />
+                      <div
+                        className="
+                          flex
+                          flex-col
+                          items-center
+                          justify-center
+                          text-center
+                          px-2
+                        "
+                      >
+                        <ShoppingCart size={20} className="text-gray-300" />
 
-                        <span className="mt-1 text-[8px] text-gray-400">
+                        <span
+                          className="
+                            mt-1
+                            text-[9px]
+                            text-gray-400
+                          "
+                        >
                           Image unavailable
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* ================= DETAILS ================= */}
                   <div className="min-w-0 flex-1">
-
-                    {/* Title */}
                     <h3
                       className="
-                        text-[13px]
-                        font-semibold
+                        text-base
+                        sm:text-[13px]
+                        font-bold
                         text-gray-900
-                        leading-[17px]
+                        leading-[1.3]
                         line-clamp-2
                       "
                     >
-                      {product.title ||
-                        "Product not available"}
+                      {product.title || "Product not available"}
                     </h3>
 
-                    {/* Subtitle */}
-                    <p className="mt-1 text-[10px] text-gray-400">
+                    <p
+                      className="
+                        mt-1
+                        text-sm
+                        sm:text-[10px]
+                        text-gray-400
+                      "
+                    >
                       {card.subtitle}
                     </p>
 
-                    {/* Price */}
                     <p
                       className="
-                        mt-1.5
-                        text-[18px]
+                        mt-2
+                        text-2xl
+                        sm:text-[18px]
                         font-bold
                         tracking-tight
                         text-slate-900
@@ -279,21 +280,39 @@ function RecommendationCard({
                       {product.price || "N/A"}
                     </p>
 
-                    {/* Rating */}
-                    <div className="flex items-center gap-1 mt-1">
-
+                    <div
+                      className="
+                        flex
+                        items-center
+                        gap-1.5
+                        mt-1
+                      "
+                    >
                       <Star
-                        size={11}
+                        size={15}
                         className="text-yellow-500"
                         fill="currentColor"
                       />
 
-                      <span className="text-[10px] font-semibold text-gray-700">
+                      <span
+                        className="
+                          text-sm
+                          sm:text-[10px]
+                          font-semibold
+                          text-gray-700
+                        "
+                      >
                         {rating}
                       </span>
 
                       {reviews > 0 && (
-                        <span className="text-[9px] text-gray-400">
+                        <span
+                          className="
+                            text-xs
+                            sm:text-[9px]
+                            text-gray-400
+                          "
+                        >
                           ({reviews})
                         </span>
                       )}
@@ -301,43 +320,63 @@ function RecommendationCard({
                   </div>
                 </div>
 
-                {/* ================= EXPLANATION ================= */}
                 <p
                   className="
-                    mt-2
-                    text-[10px]
-                    leading-4
+                    mt-4
+                    text-sm
+                    sm:text-[10px]
+                    leading-5
+                    sm:leading-4
                     text-gray-400
-                    line-clamp-1
+                    line-clamp-2
+                    sm:line-clamp-1
                   "
                 >
-                  {product.explanation ||
-                    "Recommended based on price, value and quality."}
+                  {product.explanation || card.explanation}
                 </p>
 
-                {/* ================= ACTIONS ================= */}
-                <div className="flex items-center gap-2 mt-3">
-
-                  {/* BUY NOW */}
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-end
+                    gap-3
+                    mt-4
+                    pt-3
+                    border-t
+                    border-gray-100
+                  "
+                >
                   {productLink ? (
                     <a
                       href={productLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="
-                        h-8
-                        px-3
+                        h-10
+                        sm:h-8
+                        px-5
+                        sm:px-3
+                        rounded-full
                         bg-slate-900
                         text-white
-                        rounded-full
-                        text-[10px]
-                        font-bold
-                        flex items-center
+                        text-sm
+                        sm:text-[10px]
+                        font-semibold
+                        flex
+                        items-center
                         justify-center
-                        gap-1.5
+                        gap-2
+                        whitespace-nowrap
+                        active:scale-95
+                        hover:bg-slate-800
+                        transition-all
                       "
                     >
-                      <ShoppingCart size={11} />
+                      <ShoppingCart
+                        size={15}
+                        className="sm:w-[11px] sm:h-[11px]"
+                      />
                       Buy Now
                     </a>
                   ) : (
@@ -345,12 +384,15 @@ function RecommendationCard({
                       type="button"
                       disabled
                       className="
-                        h-8
-                        px-3
+                        h-10
+                        sm:h-8
+                        px-5
+                        sm:px-3
+                        rounded-full
                         bg-gray-100
                         text-gray-400
-                        rounded-full
-                        text-[10px]
+                        text-sm
+                        sm:text-[10px]
                         font-semibold
                       "
                     >
@@ -358,7 +400,6 @@ function RecommendationCard({
                     </button>
                   )}
 
-                  {/* EXTERNAL LINK */}
                   {productLink && (
                     <a
                       href={productLink}
@@ -366,24 +407,36 @@ function RecommendationCard({
                       rel="noopener noreferrer"
                       title="View Product"
                       className="
-                        w-8
-                        h-8
+                        w-10
+                        h-10
+                        sm:w-8
+                        sm:h-8
+                        shrink-0
                         rounded-full
-                        border border-gray-300
+                        border
+                        border-gray-300
                         bg-white
-                        flex items-center
+                        flex
+                        items-center
                         justify-center
+                        active:scale-95
+                        hover:bg-gray-50
+                        transition-all
                       "
                     >
                       <ExternalLink
-                        size={12}
-                        className="text-gray-600"
+                        size={16}
+                        className="
+                          text-gray-600
+                          sm:w-[12px]
+                          sm:h-[12px]
+                        "
                       />
                     </a>
                   )}
                 </div>
               </div>
-            </div>
+            </article>
           );
         })}
       </div>

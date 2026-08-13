@@ -28,7 +28,7 @@ function ProductModal({
       p-2 sm:p-4"
       onClick={onClose}
     >
-      {/* MODAL */}
+      
       <div
         className="relative
         w-full max-w-4xl
@@ -41,7 +41,7 @@ function ProductModal({
         shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* CLOSE */}
+        
         <button
           onClick={onClose}
           className="absolute top-3 right-3 z-30
@@ -58,7 +58,7 @@ function ProductModal({
           <X className="w-4 h-4" />
         </button>
 
-        {/* SCROLLABLE CONTENT */}
+        
         <div
           className="overflow-y-auto
           max-h-[calc(100vh-16px)]
@@ -70,9 +70,9 @@ function ProductModal({
             gap-4 md:gap-6
             p-4 sm:p-5 md:p-6"
           >
-            {/* ================= LEFT ================= */}
+            
             <div>
-              {/* IMAGE */}
+              
               <div
                 className="h-[210px]
                 sm:h-[270px]
@@ -97,7 +97,7 @@ function ProductModal({
                 />
               </div>
 
-              {/* THUMBNAIL - mobile mein small */}
+              
               <div className="mt-2">
                 <div
                   className="w-12 h-12
@@ -117,9 +117,9 @@ function ProductModal({
               </div>
             </div>
 
-            {/* ================= RIGHT ================= */}
+            
             <div className="flex flex-col">
-              {/* LABEL */}
+              
               <p
                 className="text-[10px]
                 uppercase
@@ -130,7 +130,7 @@ function ProductModal({
                 Product Details
               </p>
 
-              {/* TITLE */}
+              
               <h2
                 className="mt-1.5
                 text-xl
@@ -145,7 +145,7 @@ function ProductModal({
                 {product.title}
               </h2>
 
-              {/* LINE */}
+              
               <div
                 className="w-10 h-[3px]
                 bg-blue-600
@@ -153,7 +153,7 @@ function ProductModal({
                 mt-2.5"
               />
 
-              {/* RATING */}
+              
               <div
                 className="flex items-center
                 gap-2.5 mt-3"
@@ -180,7 +180,7 @@ function ProductModal({
                 </span>
               </div>
 
-              {/* PRICE */}
+              
               <div className="mt-3">
                 <p
                   className="text-[9px]
@@ -204,7 +204,7 @@ function ProductModal({
                 </p>
               </div>
 
-              {/* SELLER */}
+              
               <div
                 className="mt-3
                 flex items-center gap-2.5"
@@ -227,7 +227,7 @@ function ProductModal({
                 </div>
               </div>
 
-              {/* DIVIDER */}
+              
               <div className="border-t border-gray-200 mt-3 pt-3">
                 <div
                   className="flex items-center
@@ -261,7 +261,7 @@ function ProductModal({
               </div>
 
               <div className="grid grid-cols-2 gap-3 mt-4">
-                {/* ADD TO COMPARE */}
+                
                 <button
                   onClick={() => toggleCompare(product)}
                   className={`
@@ -285,7 +285,7 @@ function ProductModal({
                   {isCompared ? "Added" : "Add to Compare"}
                 </button>
 
-                {/* BUY NOW */}
+                
                 <a
                   href={product.link}
                   target="_blank"
@@ -310,7 +310,7 @@ function ProductModal({
                 </a>
               </div>
 
-              {/* VISIT STORE */}
+              
               <a
                 href={product.link}
                 target="_blank"

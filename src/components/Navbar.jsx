@@ -51,12 +51,12 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
       <div className="max-w-screen-2xl mx-auto h-[68px] px-5 sm:px-6 flex items-center justify-between">
 
-        {/* ================= LOGO ================= */}
+        
         <Link
           to="/"
           className="flex items-center gap-2 shrink-0 group"
         >
-          {/* Small Sparkle Logo */}
+          
           <div className="relative w-5 h-5 flex items-center justify-center">
             <Sparkles
               size={18}
@@ -65,16 +65,16 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Logo Text */}
+          
           <span className="text-[20px] font-medium tracking-tight text-gray-900">
             Shop<span className="text-blue-600">Intel</span>
           </span>
         </Link>
 
-        {/* ================= DESKTOP NAV ================= */}
+        
         <div className="hidden lg:flex items-center gap-3">
 
-          {/* Navigation */}
+          
           {nav.map((item) => {
             const isActive = location.pathname === item.path;
 
@@ -100,11 +100,11 @@ export default function Navbar() {
             );
           })}
 
-          {/* ================= AUTH ================= */}
+          
           {isAuthenticated && (
             <div className="flex items-center gap-2 ml-2">
 
-              {/* Compact Logout */}
+              
               <button
                 onClick={handleLogout}
                 title="Logout"
@@ -128,7 +128,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* ================= MOBILE BUTTON ================= */}
+        
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
           className="
@@ -150,12 +150,12 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
+      
       {menuOpen && (
         <div className="lg:hidden border-t border-gray-100 bg-white">
           <div className="px-5 sm:px-6 py-4 flex flex-col gap-2">
 
-            {/* Navigation Links */}
+            
             {nav.map((item) => {
               const isActive =
                 location.pathname === item.path;
@@ -196,7 +196,7 @@ export default function Navbar() {
               );
             })}
 
-            {/* Wishlist + Compare */}
+            
             <div className="flex items-center gap-3 pt-3 mt-2 border-t border-gray-100">
 
               <Link
@@ -242,7 +242,7 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile User */}
+            
             {isAuthenticated && (
               <>
                 <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
@@ -262,7 +262,7 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* Mobile Logout */}
+                
                 <button
                   onClick={handleLogout}
                   className="

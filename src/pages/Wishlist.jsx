@@ -69,9 +69,7 @@ function Wishlist() {
       <main className="min-h-screen bg-[#f5f6f8] py-8">
         <div className="max-w-6xl mx-auto px-5 sm:px-6">
 
-          {/* =====================================================
-              HEADER
-          ====================================================== */}
+          
           <div className="flex items-center justify-between mb-6">
 
             <div>
@@ -114,9 +112,7 @@ function Wishlist() {
             )}
           </div>
 
-          {/* =====================================================
-              LOADING
-          ====================================================== */}
+          
           {loading && (
             <div className="space-y-3">
               {[1, 2, 3].map((item) => (
@@ -136,9 +132,7 @@ function Wishlist() {
 
        
 
-          {/* =====================================================
-              WISHLIST
-          ====================================================== */}
+          
           {!loading && wishlist.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -155,9 +149,7 @@ function Wishlist() {
                     p-3
                   "
                 >
-                  {/* =================================================
-                      PRODUCT IMAGE
-                  ================================================== */}
+                  
                   <div
                     className="
                       relative
@@ -181,7 +173,7 @@ function Wishlist() {
                       "
                     />
 
-                    {/* Remove */}
+                    
                     <button
                       onClick={() =>
                         removeProduct(product._id)
@@ -206,12 +198,9 @@ function Wishlist() {
                     </button>
                   </div>
 
-                  {/* =================================================
-                      PRODUCT INFO
-                  ================================================== */}
+                  
                   <div className="min-w-0 flex-1">
 
-                    {/* Title */}
                     <h2
                       className="
                         text-[15px]
@@ -223,8 +212,8 @@ function Wishlist() {
                     >
                       {product.title}
                     </h2>
-
-                    {/* Rating */}
+                    
+                    
                     <div className="mt-1.5 flex items-center gap-1">
                       <Star
                         size={13}
@@ -237,12 +226,10 @@ function Wishlist() {
                       </span>
                     </div>
 
-                    {/* Price */}
                     <p className="mt-2 text-lg font-bold text-gray-900">
                       {product.price}
                     </p>
-
-                    {/* Saved */}
+                    
                     <div className="mt-1 flex items-center gap-1">
                       <Heart
                         size={11}
@@ -256,9 +243,7 @@ function Wishlist() {
                     </div>
                   </div>
 
-                  {/* =================================================
-                      ACTION
-                  ================================================== */}
+                  
                   <div className="shrink-0">
 
                     <a

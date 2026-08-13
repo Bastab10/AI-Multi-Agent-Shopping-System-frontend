@@ -6,7 +6,6 @@ import RecommendationCard from "../components/RecommendationCard";
 import ProductGrid from "../components/ProductGrid";
 import ProductModal from "../components/ProductModal";
 import api from "../services/api";
-
 import {
   getWishlist,
   addToWishlist,
@@ -95,26 +94,12 @@ export default function Home() {
 
   const [compareMessage, setCompareMessage] = useState("");
 
-  // =========================
-  // LOAD WISHLIST
-  // =========================
-
   useEffect(() => {
     loadWishlist();
   }, []);
-
-  // =========================
-  // SAVE COMPARE PRODUCTS
-  // =========================
-
   useEffect(() => {
     localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
   }, [compareProducts]);
-
-  // =========================
-  // LOAD WISHLIST FUNCTION
-  // =========================
-
   const loadWishlist = async () => {
     try {
       const res = await getWishlist();
@@ -124,10 +109,6 @@ export default function Home() {
       console.error("Wishlist loading error:", err);
     }
   };
-
-  // =========================
-  // TOGGLE WISHLIST
-  // =========================
 
   const toggleWishlist = async (product) => {
     try {
@@ -145,14 +126,9 @@ export default function Home() {
     }
   };
 
-  // =========================
-  // TOGGLE COMPARE
-  // =========================
-
   const toggleCompare = (product) => {
     const exists = compareProducts.find((item) => item.id === product.id);
 
-    // Remove from compare
     if (exists) {
       setCompareProducts(
         compareProducts.filter((item) => item.id !== product.id),
@@ -161,7 +137,6 @@ export default function Home() {
       return;
     }
 
-    // Maximum 3 products
     if (compareProducts.length >= 3) {
       setCompareMessage("Maximum 3 products can be compared.");
 
@@ -172,34 +147,28 @@ export default function Home() {
       return;
     }
 
-    // Add product
     setCompareProducts([...compareProducts, product]);
   };
-
-  // =========================
-  // SEARCH FUNCTION
-  // =========================
-
   const handleSearch = async (query) => {
     if (!query || !query.trim()) {
       return;
     }
+
+    const trimmedQuery = query.trim();
 
     try {
       setLoading(true);
       setError("");
       setCompareMessage("");
 
-      // Save search history
       setHistory((previousHistory) =>
-        [query, ...previousHistory.filter((item) => item !== query)].slice(
-          0,
-          5,
-        ),
+        [
+          trimmedQuery,
+          ...previousHistory.filter((item) => item !== trimmedQuery),
+        ].slice(0, 5),
       );
-
       const res = await api.get(
-        `/products/search?q=${encodeURIComponent(query)}`,
+        `/products/search?q=${encodeURIComponent(trimmedQuery)}`,
       );
 
       setProducts(res?.data?.products || []);
@@ -226,42 +195,21 @@ export default function Home() {
       setLoading(false);
     }
   };
-
-  // =========================
-  // CHECK WISHLIST
-  // =========================
-
   const isWishlisted = (product) => {
     return wishlist.some((item) => item.productId === product.id);
   };
-
-  // =========================
-  // CHECK COMPARE
-  // =========================
-
   const isCompared = (product) => {
     return compareProducts.some((item) => item.id === product.id);
   };
 
   return (
     <>
-      {/* =========================================
-          NAVBAR
-      ========================================= */}
-
       <Navbar />
 
-      {/* =========================================
-          HERO SECTION
-      ========================================= */}
-
       <section className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-blue-50">
-        {/* Background blobs */}
-
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-violet-300/20 rounded-full blur-3xl" />
 
         <div className="absolute top-40 -right-32 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl" />
-
         <div className="relative max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24">
           <Swiper
             modules={[Pagination]}
@@ -272,8 +220,6 @@ export default function Home() {
             {HeroData.map((slide) => (
               <SwiperSlide key={slide.id}>
                 <div className="grid lg:grid-cols-2 items-center gap-12 min-h-[520px]">
-                  {/* LEFT CONTENT */}
-
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -303,35 +249,13 @@ export default function Home() {
                       {slide.description}
                     </p>
 
-                    {/* SEARCH */}
-
                     <div className="mt-8 max-w-2xl">
-                      <SearchBar onSearch={handleSearch} />
+                      <SearchBar
+                        onSearch={handleSearch}
+                        loading={loading}
+                      />{" "}
                     </div>
-
-                    {/* Quick benefits
-
-                    <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-500">
-
-                      <span className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-green-500 rounded-full" />
-                        AI Powered
-                      </span>
-
-                      <span className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                        Price Comparison
-                      </span>
-
-                      <span className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-violet-500 rounded-full" />
-                        Smart Recommendations
-                      </span>
-
-                    </div> */}
                   </motion.div>
-
-                  {/* RIGHT VISUAL */}
 
                   <motion.div
                     initial={{
@@ -347,8 +271,6 @@ export default function Home() {
                     }}
                     className="relative flex justify-center items-center"
                   >
-                    {/* Main product image */}
-
                     <div className="relative w-full max-w-lg aspect-square flex items-center justify-center">
                       <div className="absolute inset-10 rounded-full bg-violet-200/40 blur-3xl" />
 
@@ -366,16 +288,11 @@ export default function Home() {
                         />
                       )}
 
-                      {/* Floating products */}
-
                       {slide.id === 1 && (
                         <>
                           <motion.img
                             src={Headphone}
                             alt="Headphone"
-                            // animate={{
-                            //   y: [0, -15, 0],
-                            // }}
                             transition={{
                               duration: 3,
                               repeat: Infinity,
@@ -386,9 +303,6 @@ export default function Home() {
                           <motion.img
                             src={Watch}
                             alt="Watch"
-                            // animate={{
-                            //   y: [0, 15, 0],
-                            // }}
                             transition={{
                               duration: 3.5,
                               repeat: Infinity,
@@ -399,9 +313,6 @@ export default function Home() {
                           <motion.img
                             src={Phone}
                             alt="Phone"
-                            // animate={{
-                            //   y: [0, -12, 0],
-                            // }}
                             transition={{
                               duration: 4,
                               repeat: Infinity,
@@ -412,9 +323,6 @@ export default function Home() {
                           <motion.img
                             src={VR}
                             alt="VR"
-                            // animate={{
-                            //   y: [0, 12, 0],
-                            // }}
                             transition={{
                               duration: 3.2,
                               repeat: Infinity,
@@ -432,13 +340,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* =========================================
-          SEARCH RESULTS SECTION
-      ========================================= */}
-
       <main className="container mx-auto px-4 py-10">
-        {/* SEARCH HISTORY */}
-
         {history.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
@@ -461,8 +363,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* LOADING */}
-
         {loading && (
           <div className="flex items-center gap-3 text-blue-600 mb-6">
             <Search className="animate-spin" size={20} />
@@ -471,25 +371,17 @@ export default function Home() {
           </div>
         )}
 
-        {/* ERROR */}
-
         {error && (
           <div className="bg-red-100 text-red-600 rounded-lg p-4 mb-6 border border-red-200">
             {error}
           </div>
         )}
 
-        {/* COMPARE MESSAGE */}
-
         {compareMessage && (
           <div className="bg-yellow-100 text-yellow-700 rounded-lg p-4 mb-6 border border-yellow-200">
             {compareMessage}
           </div>
         )}
-
-        {/* =========================================
-            AI RECOMMENDATION
-        ========================================= */}
 
         {recommendation && !loading && (
           <section className="mb-12">
@@ -499,10 +391,6 @@ export default function Home() {
             />{" "}
           </section>
         )}
-
-        {/* =========================================
-            PRODUCTS
-        ========================================= */}
 
         {products.length > 0 && !loading && (
           <section>

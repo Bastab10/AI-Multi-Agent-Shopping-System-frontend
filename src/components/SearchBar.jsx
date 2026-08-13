@@ -15,12 +15,10 @@ function SearchBar({ onSearch, loading }) {
   return (
     <form className="relative w-full" onSubmit={handleSubmit}>
       <div className="relative">
-        {/* Search Icon */}
         <Search
           className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400"
         />
 
-        {/* Input */}
         <input
           type="text"
           placeholder="Search for products..."
@@ -48,7 +46,6 @@ function SearchBar({ onSearch, loading }) {
           "
         />
 
-        {/* Button */}
         <button
           type="submit"
           disabled={loading}

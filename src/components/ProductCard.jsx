@@ -34,7 +34,7 @@ function ProductCard({
       "
       onClick={() => onViewProduct(product)}
     >
-      {/* Wishlist */}
+      
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -61,7 +61,7 @@ function ProductCard({
         />
       </button>
 
-      {/* Product Image */}
+      
       <div
         className="
           h-56
@@ -82,10 +82,10 @@ function ProductCard({
         />
       </div>
 
-      {/* Product Details */}
+      
       <div className="p-4">
 
-        {/* Title */}
+        
         <h3
           className="
             text-[15px]
@@ -99,7 +99,7 @@ function ProductCard({
           {product.title}
         </h3>
 
-        {/* Rating */}
+        
         <div className="flex items-center gap-1.5 mt-2.5">
           <Star
             className="
@@ -118,7 +118,7 @@ function ProductCard({
           </span>
         </div>
 
-        {/* Price */}
+        
         <p
           className="
             text-xl
@@ -130,7 +130,7 @@ function ProductCard({
           {product.price}
         </p>
 
-        {/* Compare */}
+        
         <label
           className="
             flex items-center gap-2
@@ -154,10 +154,10 @@ function ProductCard({
           <span>Add to Compare</span>
         </label>
 
-        {/* Buttons */}
+        
         <div className="flex gap-2 mt-3">
 
-          {/* Buy Now */}
+          
           <a
             href={product.link}
             target="_blank"
@@ -182,7 +182,7 @@ function ProductCard({
             Buy Now
           </a>
 
-          {/* View Product */}
+          
           <button
             onClick={(e) => {
               e.stopPropagation();

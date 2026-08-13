@@ -8,7 +8,7 @@ function Footer() {
     <footer className="bg-[#0F172A] text-white mt-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
+          
           <div>
             <h2 className="text-3xl font-black tracking-tight">ShopIntel</h2>
 
@@ -18,7 +18,7 @@ function Footer() {
             </p>
           </div>
 
-          {/* Links */}
+          
           <div>
             <h3 className="text-lg font-bold mb-5">Quick Links</h3>
 
@@ -46,7 +46,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Contact */}
+          
           <div>
             <h3 className="text-lg font-bold mb-5">Contact</h3>
 
@@ -68,7 +68,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Social */}
+          
           <div>
             <h3 className="text-lg font-bold mb-5">Connect</h3>
 
