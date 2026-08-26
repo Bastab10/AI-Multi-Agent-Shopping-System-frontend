@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SearchBar from "../components/SearchBar";
@@ -6,6 +6,7 @@ import RecommendationCard from "../components/RecommendationCard";
 import ProductGrid from "../components/ProductGrid";
 import ProductModal from "../components/ProductModal";
 import api from "../services/api";
+
 import {
   getWishlist,
   addToWishlist,
@@ -13,6 +14,7 @@ import {
 } from "../services/wishlistApi";
 
 import { motion } from "framer-motion";
+
 import {
   FaGithub,
   FaLinkedinIn,
@@ -94,12 +96,33 @@ export default function Home() {
 
   const [compareMessage, setCompareMessage] = useState("");
 
+  // Reference for Product Results section
+  const resultsRef = useRef(null);
+
   useEffect(() => {
     loadWishlist();
   }, []);
+
   useEffect(() => {
-    localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
+    localStorage.setItem(
+      "compareProducts",
+      JSON.stringify(compareProducts)
+    );
   }, [compareProducts]);
+
+  // Automatically scroll to Product Results
+  // after search is completed
+  useEffect(() => {
+    if (products.length > 0 && !loading) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 150);
+    }
+  }, [products, loading]);
+
   const loadWishlist = async () => {
     try {
       const res = await getWishlist();
@@ -112,7 +135,9 @@ export default function Home() {
 
   const toggleWishlist = async (product) => {
     try {
-      const exists = wishlist.find((item) => item.productId === product.id);
+      const exists = wishlist.find(
+        (item) => item.productId === product.id
+      );
 
       if (exists) {
         await removeWishlistItem(exists._id);
@@ -127,18 +152,24 @@ export default function Home() {
   };
 
   const toggleCompare = (product) => {
-    const exists = compareProducts.find((item) => item.id === product.id);
+    const exists = compareProducts.find(
+      (item) => item.id === product.id
+    );
 
     if (exists) {
       setCompareProducts(
-        compareProducts.filter((item) => item.id !== product.id),
+        compareProducts.filter(
+          (item) => item.id !== product.id
+        )
       );
 
       return;
     }
 
     if (compareProducts.length >= 3) {
-      setCompareMessage("Maximum 3 products can be compared.");
+      setCompareMessage(
+        "Maximum 3 products can be compared."
+      );
 
       setTimeout(() => {
         setCompareMessage("");
@@ -147,8 +178,12 @@ export default function Home() {
       return;
     }
 
-    setCompareProducts([...compareProducts, product]);
+    setCompareProducts([
+      ...compareProducts,
+      product,
+    ]);
   };
+
   const handleSearch = async (query) => {
     if (!query || !query.trim()) {
       return;
@@ -161,33 +196,48 @@ export default function Home() {
       setError("");
       setCompareMessage("");
 
+      // Save search history
       setHistory((previousHistory) =>
         [
           trimmedQuery,
-          ...previousHistory.filter((item) => item !== trimmedQuery),
-        ].slice(0, 5),
-      );
-      const res = await api.get(
-        `/products/search?q=${encodeURIComponent(trimmedQuery)}`,
+          ...previousHistory.filter(
+            (item) => item !== trimmedQuery
+          ),
+        ].slice(0, 5)
       );
 
+      // Search products
+      const res = await api.get(
+        `/products/search?q=${encodeURIComponent(
+          trimmedQuery
+        )}`
+      );
+
+      // Update products
       setProducts(res?.data?.products || []);
 
-      let recommendationData = res?.data?.recommendation;
+      // Get AI recommendation
+      let recommendationData =
+        res?.data?.recommendation;
 
       if (typeof recommendationData === "string") {
         try {
-          recommendationData = JSON.parse(recommendationData);
+          recommendationData =
+            JSON.parse(recommendationData);
         } catch {
           recommendationData = null;
         }
       }
 
-      setRecommendation(recommendationData || null);
+      setRecommendation(
+        recommendationData || null
+      );
     } catch (err) {
       console.error("Search error:", err);
 
-      setError("Something went wrong while searching. Please try again.");
+      setError(
+        "Something went wrong while searching. Please try again."
+      );
 
       setProducts([]);
       setRecommendation(null);
@@ -195,21 +245,29 @@ export default function Home() {
       setLoading(false);
     }
   };
+
   const isWishlisted = (product) => {
-    return wishlist.some((item) => item.productId === product.id);
+    return wishlist.some(
+      (item) => item.productId === product.id
+    );
   };
+
   const isCompared = (product) => {
-    return compareProducts.some((item) => item.id === product.id);
+    return compareProducts.some(
+      (item) => item.id === product.id
+    );
   };
 
   return (
     <>
       <Navbar />
 
+      {/* ================= HERO SECTION ================= */}
       <section className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-blue-50">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-violet-300/20 rounded-full blur-3xl" />
 
         <div className="absolute top-40 -right-32 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl" />
+
         <div className="relative max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24">
           <Swiper
             modules={[Pagination]}
@@ -220,6 +278,7 @@ export default function Home() {
             {HeroData.map((slide) => (
               <SwiperSlide key={slide.id}>
                 <div className="grid lg:grid-cols-2 items-center gap-12 min-h-[520px]">
+                  {/* LEFT SIDE */}
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -242,7 +301,9 @@ export default function Home() {
 
                       <br />
 
-                      <span className="text-violet-600">{slide.title2}</span>
+                      <span className="text-violet-600">
+                        {slide.title2}
+                      </span>
                     </h1>
 
                     <p className="mt-6 text-lg text-gray-600 max-w-xl leading-relaxed">
@@ -253,10 +314,11 @@ export default function Home() {
                       <SearchBar
                         onSearch={handleSearch}
                         loading={loading}
-                      />{" "}
+                      />
                     </div>
                   </motion.div>
 
+                  {/* RIGHT SIDE */}
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -288,6 +350,7 @@ export default function Home() {
                         />
                       )}
 
+                      {/* Floating Images */}
                       {slide.id === 1 && (
                         <>
                           <motion.img
@@ -340,7 +403,10 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ================= MAIN CONTENT ================= */}
       <main className="container mx-auto px-4 py-10">
+
+        {/* ================= RECENT SEARCHES ================= */}
         {history.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
@@ -363,37 +429,50 @@ export default function Home() {
           </div>
         )}
 
+        {/* ================= LOADING ================= */}
         {loading && (
           <div className="flex items-center gap-3 text-blue-600 mb-6">
-            <Search className="animate-spin" size={20} />
+            <Search
+              className="animate-spin"
+              size={20}
+            />
 
-            <span className="font-medium">Searching...</span>
+            <span className="font-medium">
+              Searching...
+            </span>
           </div>
         )}
 
+        {/* ================= ERROR ================= */}
         {error && (
           <div className="bg-red-100 text-red-600 rounded-lg p-4 mb-6 border border-red-200">
             {error}
           </div>
         )}
 
+        {/* ================= COMPARE MESSAGE ================= */}
         {compareMessage && (
-          <div className="bg-yellow-100 text-yellow-700 rounded-lg p-4 mb-6 border border-yellow-200">
+          <div className="bg-yellow-100 text-yellow-700 rounded-lg p-4 mb-6">
             {compareMessage}
           </div>
         )}
 
+        {/* ================= AI RECOMMENDATIONS ================= */}
         {recommendation && !loading && (
           <section className="mb-12">
             <RecommendationCard
               recommendation={recommendation}
               products={products}
-            />{" "}
+            />
           </section>
         )}
 
+        {/* ================= SEARCH RESULTS ================= */}
         {products.length > 0 && !loading && (
-          <section>
+          <section
+            ref={resultsRef}
+            className="scroll-mt-24"
+          >
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
@@ -418,21 +497,17 @@ export default function Home() {
         )}
       </main>
 
-      {/* =========================================
-          PRODUCT MODAL
-      ========================================= */}
-
+      {/* ================= PRODUCT MODAL ================= */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
+          onClose={() =>
+            setSelectedProduct(null)
+          }
         />
       )}
 
-      {/* =========================================
-          FOOTER
-      ========================================= */}
-
+      {/* ================= FOOTER ================= */}
       <Footer />
     </>
   );
