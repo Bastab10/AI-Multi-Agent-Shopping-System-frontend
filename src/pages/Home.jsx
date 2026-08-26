@@ -73,31 +73,76 @@ const HeroData = [
 ];
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [recommendation, setRecommendation] = useState(null);
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [history, setHistory] = useState([]);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const [wishlist, setWishlist] = useState([]);
-
-  const [compareProducts, setCompareProducts] = useState(() => {
+  const [products, setProducts] = useState(() => {
     try {
-      const saved = localStorage.getItem("compareProducts");
+      const saved = sessionStorage.getItem("searchProducts");
       return saved ? JSON.parse(saved) : [];
-    } catch {
+    } catch (error) {
+      console.error("Products restore error:", error);
       return [];
     }
   });
 
-  const [compareMessage, setCompareMessage] = useState("");
+  const [recommendation, setRecommendation] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(
+        "searchRecommendation"
+      );
 
-  // Reference for Product Results section
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      console.error(
+        "Recommendation restore error:",
+        error
+      );
+
+      return null;
+    }
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [history, setHistory] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(
+        "searchHistory"
+      );
+
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error(
+        "Search history restore error:",
+        error
+      );
+
+      return [];
+    }
+  });
+
+  const [selectedProduct, setSelectedProduct] =
+    useState(null);
+
+  const [wishlist, setWishlist] = useState([]);
+
+  const [compareProducts, setCompareProducts] =
+    useState(() => {
+      try {
+        const saved =
+          localStorage.getItem("compareProducts");
+
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    });
+
+  const [compareMessage, setCompareMessage] =
+    useState("");
+
   const resultsRef = useRef(null);
+
+  const shouldScrollToResults = useRef(false);
 
   useEffect(() => {
     loadWishlist();
@@ -110,16 +155,74 @@ export default function Home() {
     );
   }, [compareProducts]);
 
-  // Automatically scroll to Product Results
-  // after search is completed
   useEffect(() => {
-    if (products.length > 0 && !loading) {
-      setTimeout(() => {
+    try {
+      if (products.length > 0) {
+        sessionStorage.setItem(
+          "searchProducts",
+          JSON.stringify(products)
+        );
+      } else {
+        sessionStorage.removeItem("searchProducts");
+      }
+    } catch (error) {
+      console.error(
+        "Saving products error:",
+        error
+      );
+    }
+  }, [products]);
+
+  useEffect(() => {
+    try {
+      if (recommendation) {
+        sessionStorage.setItem(
+          "searchRecommendation",
+          JSON.stringify(recommendation)
+        );
+      } else {
+        sessionStorage.removeItem(
+          "searchRecommendation"
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Saving recommendation error:",
+        error
+      );
+    }
+  }, [recommendation]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        "searchHistory",
+        JSON.stringify(history)
+      );
+    } catch (error) {
+      console.error(
+        "Saving search history error:",
+        error
+      );
+    }
+  }, [history]);
+
+  useEffect(() => {
+    if (
+      shouldScrollToResults.current &&
+      products.length > 0 &&
+      !loading
+    ) {
+      const timer = setTimeout(() => {
         resultsRef.current?.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
+
+        shouldScrollToResults.current = false;
       }, 150);
+
+      return () => clearTimeout(timer);
     }
   }, [products, loading]);
 
@@ -129,7 +232,10 @@ export default function Home() {
 
       setWishlist(res?.data?.data || []);
     } catch (err) {
-      console.error("Wishlist loading error:", err);
+      console.error(
+        "Wishlist loading error:",
+        err
+      );
     }
   };
 
@@ -147,7 +253,10 @@ export default function Home() {
 
       await loadWishlist();
     } catch (err) {
-      console.error("Wishlist error:", err);
+      console.error(
+        "Wishlist error:",
+        err
+      );
     }
   };
 
@@ -196,7 +305,8 @@ export default function Home() {
       setError("");
       setCompareMessage("");
 
-      // Save search history
+      shouldScrollToResults.current = true;
+
       setHistory((previousHistory) =>
         [
           trimmedQuery,
@@ -206,21 +316,24 @@ export default function Home() {
         ].slice(0, 5)
       );
 
-      // Search products
       const res = await api.get(
         `/products/search?q=${encodeURIComponent(
           trimmedQuery
         )}`
       );
 
-      // Update products
-      setProducts(res?.data?.products || []);
+      const newProducts =
+        res?.data?.products || [];
 
-      // Get AI recommendation
+      setProducts(newProducts);
+
       let recommendationData =
         res?.data?.recommendation;
 
-      if (typeof recommendationData === "string") {
+      if (
+        typeof recommendationData ===
+        "string"
+      ) {
         try {
           recommendationData =
             JSON.parse(recommendationData);
@@ -233,7 +346,12 @@ export default function Home() {
         recommendationData || null
       );
     } catch (err) {
-      console.error("Search error:", err);
+      console.error(
+        "Search error:",
+        err
+      );
+
+      shouldScrollToResults.current = false;
 
       setError(
         "Something went wrong while searching. Please try again."
@@ -262,7 +380,6 @@ export default function Home() {
     <>
       <Navbar />
 
-      {/* ================= HERO SECTION ================= */}
       <section className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-blue-50">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-violet-300/20 rounded-full blur-3xl" />
 
@@ -278,7 +395,6 @@ export default function Home() {
             {HeroData.map((slide) => (
               <SwiperSlide key={slide.id}>
                 <div className="grid lg:grid-cols-2 items-center gap-12 min-h-[520px]">
-                  {/* LEFT SIDE */}
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -318,7 +434,6 @@ export default function Home() {
                     </div>
                   </motion.div>
 
-                  {/* RIGHT SIDE */}
                   <motion.div
                     initial={{
                       opacity: 0,
@@ -350,7 +465,6 @@ export default function Home() {
                         />
                       )}
 
-                      {/* Floating Images */}
                       {slide.id === 1 && (
                         <>
                           <motion.img
@@ -403,10 +517,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= MAIN CONTENT ================= */}
       <main className="container mx-auto px-4 py-10">
-
-        {/* ================= RECENT SEARCHES ================= */}
         {history.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
@@ -419,7 +530,9 @@ export default function Home() {
               {history.map((item, index) => (
                 <button
                   key={`${item}-${index}`}
-                  onClick={() => handleSearch(item)}
+                  onClick={() =>
+                    handleSearch(item)
+                  }
                   className="px-4 py-2 rounded-full bg-gray-100 hover:bg-violet-100 hover:text-violet-700 text-gray-700 text-sm transition"
                 >
                   {item}
@@ -429,7 +542,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= LOADING ================= */}
         {loading && (
           <div className="flex items-center gap-3 text-blue-600 mb-6">
             <Search
@@ -443,21 +555,18 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= ERROR ================= */}
         {error && (
           <div className="bg-red-100 text-red-600 rounded-lg p-4 mb-6 border border-red-200">
             {error}
           </div>
         )}
 
-        {/* ================= COMPARE MESSAGE ================= */}
         {compareMessage && (
           <div className="bg-yellow-100 text-yellow-700 rounded-lg p-4 mb-6">
             {compareMessage}
           </div>
         )}
 
-        {/* ================= AI RECOMMENDATIONS ================= */}
         {recommendation && !loading && (
           <section className="mb-12">
             <RecommendationCard
@@ -467,7 +576,6 @@ export default function Home() {
           </section>
         )}
 
-        {/* ================= SEARCH RESULTS ================= */}
         {products.length > 0 && !loading && (
           <section
             ref={resultsRef}
@@ -489,15 +597,20 @@ export default function Home() {
               products={products}
               wishlist={wishlist}
               toggleWishlist={toggleWishlist}
-              onViewProduct={setSelectedProduct}
-              compareProducts={compareProducts}
-              toggleCompare={toggleCompare}
+              onViewProduct={
+                setSelectedProduct
+              }
+              compareProducts={
+                compareProducts
+              }
+              toggleCompare={
+                toggleCompare
+              }
             />
           </section>
         )}
       </main>
 
-      {/* ================= PRODUCT MODAL ================= */}
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
@@ -507,7 +620,6 @@ export default function Home() {
         />
       )}
 
-      {/* ================= FOOTER ================= */}
       <Footer />
     </>
   );
