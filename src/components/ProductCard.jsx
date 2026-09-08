@@ -31,6 +31,7 @@ function ProductCard({
         shadow-sm
         overflow-hidden
         cursor-pointer
+        font-extralight
       "
       onClick={() => onViewProduct(product)}
     >
@@ -78,6 +79,7 @@ function ProductCard({
             max-w-full
             object-contain
             mix-blend-multiply
+            
           "
         />
       </div>
@@ -94,6 +96,8 @@ function ProductCard({
             leading-5
             line-clamp-2
             min-h-[40px]
+            font-extralight
+            
           "
         >
           {product.title}

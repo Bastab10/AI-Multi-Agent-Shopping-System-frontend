@@ -1,11 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SearchBar from "../components/SearchBar";
+import Chatbot from "../components/Chatbot";
 import RecommendationCard from "../components/RecommendationCard";
 import ProductGrid from "../components/ProductGrid";
 import ProductModal from "../components/ProductModal";
-import api from "../services/api";
 
 import {
   getWishlist,
@@ -15,204 +14,55 @@ import {
 
 import { motion } from "framer-motion";
 
-import {
-  FaGithub,
-  FaLinkedinIn,
-  FaEnvelope,
-  FaCode,
-  FaArrowRight,
-  FaDownload,
-} from "react-icons/fa";
-
-import { Search } from "lucide-react";
-
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
-
-import "swiper/css";
-import "swiper/css/pagination";
-
 import Headphone from "../assets/headphone.png";
 import VR from "../assets/vr.png";
 import Laptop from "../assets/laptop.png";
 import Watch from "../assets/watch.png";
 import Phone from "../assets/phone.png";
 
-const HeroData = [
-  {
-    id: 1,
-    laptop: Laptop,
-    headphone: Headphone,
-    watch: Watch,
-    phone: Phone,
-    vr: VR,
-    subtitle: "AI Shopping Assistant",
-    title: "Smart",
-    title2: "SHOPPING",
-    description:
-      "Search millions of products, compare prices instantly, and get AI-powered recommendations tailored to your needs.",
-  },
-  {
-    id: 2,
-    img: VR,
-    subtitle: "Compare Before You Buy",
-    title: "AI",
-    title2: "COMPARISON",
-    description:
-      "Compare features, prices, ratings, and reviews across multiple products to make the best buying decision.",
-  },
-  {
-    id: 3,
-    img: Laptop,
-    subtitle: "Find the Best Deals",
-    title: "Best",
-    title2: "OFFERS",
-    description:
-      "Discover trending products, exclusive discounts, and personalized recommendations powered by intelligent AI agents.",
-  },
-];
-
 export default function Home() {
-  const [products, setProducts] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem("searchProducts");
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error("Products restore error:", error);
-      return [];
-    }
-  });
-
-  const [recommendation, setRecommendation] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(
-        "searchRecommendation"
-      );
-
-      return saved ? JSON.parse(saved) : null;
-    } catch (error) {
-      console.error(
-        "Recommendation restore error:",
-        error
-      );
-
-      return null;
-    }
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const [history, setHistory] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(
-        "searchHistory"
-      );
-
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error(
-        "Search history restore error:",
-        error
-      );
-
-      return [];
-    }
-  });
-
-  const [selectedProduct, setSelectedProduct] =
-    useState(null);
-
+  const [products, setProducts] = useState([]);
+  const [recommendation, setRecommendation] = useState(null);
+  const [comparison, setComparison] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [wishlist, setWishlist] = useState([]);
 
-  const [compareProducts, setCompareProducts] =
-    useState(() => {
-      try {
-        const saved =
-          localStorage.getItem("compareProducts");
+  const [compareProducts, setCompareProducts] = useState(() => {
+    try {
+      const saved = localStorage.getItem("compareProducts");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
-      }
-    });
-
-  const [compareMessage, setCompareMessage] =
-    useState("");
+  const [compareMessage, setCompareMessage] = useState("");
 
   const resultsRef = useRef(null);
-
   const shouldScrollToResults = useRef(false);
 
   useEffect(() => {
+    window.history.scrollRestoration = "manual";
+
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+
     loadWishlist();
+
+    return () => {
+      window.history.scrollRestoration = "auto";
+    };
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(
-      "compareProducts",
-      JSON.stringify(compareProducts)
-    );
+    localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
   }, [compareProducts]);
 
   useEffect(() => {
-    try {
-      if (products.length > 0) {
-        sessionStorage.setItem(
-          "searchProducts",
-          JSON.stringify(products)
-        );
-      } else {
-        sessionStorage.removeItem("searchProducts");
-      }
-    } catch (error) {
-      console.error(
-        "Saving products error:",
-        error
-      );
-    }
-  }, [products]);
-
-  useEffect(() => {
-    try {
-      if (recommendation) {
-        sessionStorage.setItem(
-          "searchRecommendation",
-          JSON.stringify(recommendation)
-        );
-      } else {
-        sessionStorage.removeItem(
-          "searchRecommendation"
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Saving recommendation error:",
-        error
-      );
-    }
-  }, [recommendation]);
-
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(
-        "searchHistory",
-        JSON.stringify(history)
-      );
-    } catch (error) {
-      console.error(
-        "Saving search history error:",
-        error
-      );
-    }
-  }, [history]);
-
-  useEffect(() => {
-    if (
-      shouldScrollToResults.current &&
-      products.length > 0 &&
-      !loading
-    ) {
+    if (shouldScrollToResults.current && products.length > 0) {
       const timer = setTimeout(() => {
         resultsRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -220,30 +70,24 @@ export default function Home() {
         });
 
         shouldScrollToResults.current = false;
-      }, 150);
+      }, 300);
 
       return () => clearTimeout(timer);
     }
-  }, [products, loading]);
+  }, [products]);
 
   const loadWishlist = async () => {
     try {
       const res = await getWishlist();
-
       setWishlist(res?.data?.data || []);
-    } catch (err) {
-      console.error(
-        "Wishlist loading error:",
-        err
-      );
+    } catch (error) {
+      console.error("Wishlist loading error:", error);
     }
   };
 
   const toggleWishlist = async (product) => {
     try {
-      const exists = wishlist.find(
-        (item) => item.productId === product.id
-      );
+      const exists = wishlist.find((item) => item.productId === product.id);
 
       if (exists) {
         await removeWishlistItem(exists._id);
@@ -252,33 +96,23 @@ export default function Home() {
       }
 
       await loadWishlist();
-    } catch (err) {
-      console.error(
-        "Wishlist error:",
-        err
-      );
+    } catch (error) {
+      console.error("Wishlist error:", error);
     }
   };
 
   const toggleCompare = (product) => {
-    const exists = compareProducts.find(
-      (item) => item.id === product.id
-    );
+    const exists = compareProducts.find((item) => item.id === product.id);
 
     if (exists) {
       setCompareProducts(
-        compareProducts.filter(
-          (item) => item.id !== product.id
-        )
+        compareProducts.filter((item) => item.id !== product.id),
       );
-
       return;
     }
 
     if (compareProducts.length >= 3) {
-      setCompareMessage(
-        "Maximum 3 products can be compared."
-      );
+      setCompareMessage("Maximum 3 products can be compared.");
 
       setTimeout(() => {
         setCompareMessage("");
@@ -287,340 +121,285 @@ export default function Home() {
       return;
     }
 
-    setCompareProducts([
-      ...compareProducts,
-      product,
-    ]);
+    setCompareProducts([...compareProducts, product]);
   };
 
-  const handleSearch = async (query) => {
-    if (!query || !query.trim()) {
+  const handleProductsFound = (newProducts) => {
+    if (!Array.isArray(newProducts) || newProducts.length === 0) {
       return;
     }
 
-    const trimmedQuery = query.trim();
+    shouldScrollToResults.current = true;
+    setProducts(newProducts);
+  };
 
-    try {
-      setLoading(true);
-      setError("");
-      setCompareMessage("");
-
-      shouldScrollToResults.current = true;
-
-      setHistory((previousHistory) =>
-        [
-          trimmedQuery,
-          ...previousHistory.filter(
-            (item) => item !== trimmedQuery
-          ),
-        ].slice(0, 5)
-      );
-
-      const res = await api.get(
-        `/products/search?q=${encodeURIComponent(
-          trimmedQuery
-        )}`
-      );
-
-      const newProducts =
-        res?.data?.products || [];
-
-      setProducts(newProducts);
-
-      let recommendationData =
-        res?.data?.recommendation;
-
-      if (
-        typeof recommendationData ===
-        "string"
-      ) {
-        try {
-          recommendationData =
-            JSON.parse(recommendationData);
-        } catch {
-          recommendationData = null;
-        }
-      }
-
-      setRecommendation(
-        recommendationData || null
-      );
-    } catch (err) {
-      console.error(
-        "Search error:",
-        err
-      );
-
-      shouldScrollToResults.current = false;
-
-      setError(
-        "Something went wrong while searching. Please try again."
-      );
-
-      setProducts([]);
-      setRecommendation(null);
-    } finally {
-      setLoading(false);
+  const handleRecommendationFound = (newRecommendation) => {
+    if (!newRecommendation) {
+      return;
     }
+
+    setRecommendation(newRecommendation);
   };
 
-  const isWishlisted = (product) => {
-    return wishlist.some(
-      (item) => item.productId === product.id
-    );
+  const handleComparisonFound = (newComparison) => {
+    if (!newComparison) {
+      return;
+    }
+
+    setComparison(newComparison);
   };
 
-  const isCompared = (product) => {
-    return compareProducts.some(
-      (item) => item.id === product.id
+  const renderComparison = () => {
+    if (!comparison) {
+      return null;
+    }
+
+    if (Array.isArray(comparison)) {
+      return (
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {comparison.map((item, index) => (
+            <div
+              key={index}
+              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+            >
+              {typeof item === "object" && item !== null ? (
+                Object.entries(item).map(([key, value]) => (
+                  <div key={key} className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      {key.replace(/_/g, " ")}
+                    </p>
+
+                    <p className="mt-1 text-sm text-gray-800">
+                      {typeof value === "object"
+                        ? JSON.stringify(value)
+                        : String(value)}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-700">{String(item)}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (typeof comparison === "object" && comparison !== null) {
+      return (
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="divide-y divide-gray-200">
+            {Object.entries(comparison).map(([key, value]) => (
+              <div
+                key={key}
+                className="grid gap-3 px-6 py-5 md:grid-cols-[220px_1fr]"
+              >
+                <div className="font-semibold capitalize text-gray-700">
+                  {key.replace(/_/g, " ")}
+                </div>
+
+                <div className="text-gray-600">
+                  {typeof value === "object" ? (
+                    <pre className="whitespace-pre-wrap text-sm">
+                      {JSON.stringify(value, null, 2)}
+                    </pre>
+                  ) : (
+                    String(value)
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 text-gray-700 shadow-sm">
+        {String(comparison)}
+      </div>
     );
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-blue-50">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-violet-300/20 rounded-full blur-3xl" />
+      <section className="relative min-h-[calc(100vh-72px)] overflow-hidden bg-gradient-to-br from-[#fffaf3] via-[#fff1fa] to-[#eef3ff]">
+        <div className="absolute -left-32 top-0 h-80 w-80 rounded-full bg-pink-200/30 blur-3xl" />
 
-        <div className="absolute top-40 -right-32 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl" />
+        <div className="absolute right-0 top-10 h-96 w-96 rounded-full bg-violet-200/30 blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24">
-          <Swiper
-            modules={[Pagination]}
-            pagination={{ clickable: true }}
-            loop={true}
-            className="hero-swiper"
-          >
-            {HeroData.map((slide) => (
-              <SwiperSlide key={slide.id}>
-                <div className="grid lg:grid-cols-2 items-center gap-12 min-h-[520px]">
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      x: -40,
-                    }}
-                    whileInView={{
-                      opacity: 1,
-                      x: 0,
-                    }}
-                    transition={{
-                      duration: 0.7,
-                    }}
-                  >
-                    <span className="inline-flex items-center px-4 py-2 mb-6 rounded-full bg-violet-100 text-violet-700 border border-violet-200 text-sm font-semibold">
-                      {slide.subtitle}
-                    </span>
+        <div className="relative mx-auto flex min-h-[calc(100vh-72px)] max-w-7xl items-center px-6 py-6 lg:px-10">
+          <div className="grid w-full items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+            <motion.div
+              initial={{
+                opacity: 0,
+                x: -25,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
+              transition={{
+                duration: 0.6,
+              }}
+              className="flex flex-col justify-center"
+            >
+              <div className="mb-5">
+                <h1 className="mt-5 text-5xl font-black leading-[0.9] font-extralight  text-gray-950 sm:text-6xl">
+                  Smart
+                  <br />
+                  <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+                    SHOPPING
+                  </span>
+                </h1>
+                <p className="mt-5 text-gray-600 font-extralight leading-7">
+                  AI-powered shopping assistant that helps you compare products,
+                  discover better deals and make smarter buying decisions.
+                </p>
+              </div>
 
-                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 leading-[0.95]">
-                      {slide.title}
+              <div className="w-full max-w-[550px]">
+                <Chatbot
+                  onProductsFound={handleProductsFound}
+                  onRecommendationFound={handleRecommendationFound}
+                  onComparisonFound={handleComparisonFound}
+                />
+              </div>
+            </motion.div>
 
-                      <br />
+            <motion.div
+              initial={{
+                opacity: 0,
+                x: 25,
+              }}
+              animate={{
+                opacity: 1,
+                x: 0,
+              }}
+              transition={{
+                duration: 0.7,
+              }}
+              className="relative flex min-h-[600px] items-center justify-center"
+            >
+              <div className="relative h-[520px] w-full -translate-y-12 sm:-translate-y-14 lg:-translate-y-20">
+                <div className="absolute h-[520px] w-[520px] rounded-full bg-violet-200/25 blur-3xl" />
 
-                      <span className="text-violet-600">
-                        {slide.title2}
-                      </span>
-                    </h1>
+                <motion.img
+                  src={Laptop}
+                  alt="Laptop"
+                  className="absolute bottom-8 right-8 z-20 w-[350px] object-contain drop-shadow-2xl sm:w-[400px] lg:w-[440px]"
+                />
 
-                    <p className="mt-6 text-lg text-gray-600 max-w-xl leading-relaxed">
-                      {slide.description}
-                    </p>
+                <motion.img
+                  src={Headphone}
+                  alt="Headphone"
+                  className="absolute left-[12%] top-[15%] z-30 w-20 object-contain sm:w-24"
+                />
 
-                    <div className="mt-8 max-w-2xl">
-                      <SearchBar
-                        onSearch={handleSearch}
-                        loading={loading}
-                      />
-                    </div>
-                  </motion.div>
+                <motion.img
+                  src={VR}
+                  alt="VR"
+                  className="absolute right-[5%] top-[22%] z-30 w-20 object-contain sm:w-24"
+                />
 
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      scale: 0.9,
-                    }}
-                    whileInView={{
-                      opacity: 1,
-                      scale: 1,
-                    }}
-                    transition={{
-                      duration: 0.8,
-                    }}
-                    className="relative flex justify-center items-center"
-                  >
-                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center">
-                      <div className="absolute inset-10 rounded-full bg-violet-200/40 blur-3xl" />
+                <motion.img
+                  src={Phone}
+                  alt="Phone"
+                  className="absolute bottom-[18%] right-[3%] z-30 w-20 object-contain sm:w-24"
+                />
 
-                      {slide.img ? (
-                        <img
-                          src={slide.img}
-                          alt={slide.title2}
-                          className="relative z-10 w-72 sm:w-80 lg:w-[400px] object-contain drop-shadow-2xl"
-                        />
-                      ) : (
-                        <img
-                          src={Laptop}
-                          alt="Smart shopping"
-                          className="relative z-10 w-72 sm:w-80 lg:w-[400px] object-contain drop-shadow-2xl"
-                        />
-                      )}
-
-                      {slide.id === 1 && (
-                        <>
-                          <motion.img
-                            src={Headphone}
-                            alt="Headphone"
-                            transition={{
-                              duration: 3,
-                              repeat: Infinity,
-                            }}
-                            className="absolute z-20 w-24 sm:w-28 top-10 left-2 object-contain"
-                          />
-
-                          <motion.img
-                            src={Watch}
-                            alt="Watch"
-                            transition={{
-                              duration: 3.5,
-                              repeat: Infinity,
-                            }}
-                            className="absolute z-20 w-24 sm:w-28 bottom-12 left-4 object-contain"
-                          />
-
-                          <motion.img
-                            src={Phone}
-                            alt="Phone"
-                            transition={{
-                              duration: 4,
-                              repeat: Infinity,
-                            }}
-                            className="absolute z-20 w-24 sm:w-28 bottom-10 right-2 object-contain"
-                          />
-
-                          <motion.img
-                            src={VR}
-                            alt="VR"
-                            transition={{
-                              duration: 3.2,
-                              repeat: Infinity,
-                            }}
-                            className="absolute z-20 w-24 sm:w-28 top-10 right-4 object-contain"
-                          />
-                        </>
-                      )}
-                    </div>
-                  </motion.div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                <motion.img
+                  src={Watch}
+                  alt="Watch"
+                  className="absolute bottom-[10%] left-[10%] z-30 w-20 object-contain sm:w-24"
+                />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      <main className="container mx-auto px-4 py-10">
-        {history.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Recent Searches
-              </h3>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {history.map((item, index) => (
-                <button
-                  key={`${item}-${index}`}
-                  onClick={() =>
-                    handleSearch(item)
-                  }
-                  className="px-4 py-2 rounded-full bg-gray-100 hover:bg-violet-100 hover:text-violet-700 text-gray-700 text-sm transition"
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {loading && (
-          <div className="flex items-center gap-3 text-blue-600 mb-6">
-            <Search
-              className="animate-spin"
-              size={20}
-            />
-
-            <span className="font-medium">
-              Searching...
-            </span>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-100 text-red-600 rounded-lg p-4 mb-6 border border-red-200">
-            {error}
-          </div>
-        )}
-
-        {compareMessage && (
-          <div className="bg-yellow-100 text-yellow-700 rounded-lg p-4 mb-6">
-            {compareMessage}
-          </div>
-        )}
-
-        {recommendation && !loading && (
-          <section className="mb-12">
-            <RecommendationCard
-              recommendation={recommendation}
-              products={products}
-            />
-          </section>
-        )}
-
-        {products.length > 0 && !loading && (
-          <section
-            ref={resultsRef}
-            className="scroll-mt-24"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  Search Results
-                </h2>
-
-                <p className="text-gray-500 mt-1">
-                  Found {products.length} products
-                </p>
+      {(products.length > 0 ||
+        recommendation ||
+        comparison ||
+        compareMessage) && (
+        <main ref={resultsRef} className="scroll-mt-20 bg-[#f7f8fc] px-4 py-12">
+          <div className="mx-auto max-w-7xl">
+            {compareMessage && (
+              <div className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm font-medium text-yellow-700">
+                {compareMessage}
               </div>
-            </div>
+            )}
 
-            <ProductGrid
-              products={products}
-              wishlist={wishlist}
-              toggleWishlist={toggleWishlist}
-              onViewProduct={
-                setSelectedProduct
-              }
-              compareProducts={
-                compareProducts
-              }
-              toggleCompare={
-                toggleCompare
-              }
-            />
-          </section>
-        )}
-      </main>
+            {recommendation && (
+              <section className="mb-12">
+                <RecommendationCard
+                  recommendation={recommendation}
+                  products={products}
+                />
+              </section>
+            )}
+
+            {products.length > 0 && (
+              <section className="mb-12">
+                <div className="mb-6">
+                  <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                    SHOPPING RESULTS
+                  </span>
+
+                  <h2 className="mt-3 text-3xl font-extralight text-gray-900">
+                    Recommended Products
+                  </h2>
+
+                  <p className="mt-2 font-extralight text-gray-500">
+                    Real products found according to your conversation.
+                  </p>
+                </div>
+
+                <ProductGrid
+                  products={products}
+                  wishlist={wishlist}
+                  toggleWishlist={toggleWishlist}
+                  onViewProduct={setSelectedProduct}
+                  compareProducts={compareProducts}
+                  toggleCompare={toggleCompare}
+                />
+              </section>
+            )}
+
+            {comparison && (
+              <section className="mb-12">
+                <div className="mb-6">
+                  <span className="inline-flex rounded-full bg-indigo-100 px-3 py-1 text-xs font-extralight text-indigo-700">
+                    AI POWERED
+                  </span>
+
+                  <h2 className="mt-3 text-3xl font-extralight text-gray-900">
+                    AI Comparison
+                  </h2>
+
+                  <p className="mt-2 text-gray-500">
+                    Compare products and make a smarter buying decision.
+                  </p>
+                </div>
+
+                {renderComparison()}
+              </section>
+            )}
+          </div>
+        </main>
+      )}
 
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
-          onClose={() =>
-            setSelectedProduct(null)
-          }
+          onClose={() => setSelectedProduct(null)}
         />
       )}
 
       <Footer />
-    </>
+    </div>
   );
 }

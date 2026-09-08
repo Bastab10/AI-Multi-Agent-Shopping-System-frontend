@@ -74,6 +74,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                 tracking-tight
                 text-gray-900
                 leading-tight
+                font-extralight
               "
             >
               AI Recommendations
@@ -87,6 +88,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                 leading-5
                 text-gray-500
                 max-w-xl
+                font-extralight
               "
             >
               Personalized picks selected by AI based on price, value and
@@ -119,6 +121,7 @@ function RecommendationCard({ recommendation, products = [] }) {
             text-blue-600
             hover:bg-blue-50
             transition
+            
           "
         >
           View all recommendations
