@@ -21,7 +21,14 @@ import Watch from "../assets/watch.png";
 import Phone from "../assets/phone.png";
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(() => {
+    try {
+      const saved = localStorage.getItem("searchProducts");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [recommendation, setRecommendation] = useState(null);
   const [comparison, setComparison] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -60,6 +67,10 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
   }, [compareProducts]);
+
+  useEffect(() => {
+    localStorage.setItem("searchProducts", JSON.stringify(products));
+  }, [products]);
 
   useEffect(() => {
     if (shouldScrollToResults.current && products.length > 0) {
@@ -325,7 +336,10 @@ export default function Home() {
         recommendation ||
         comparison ||
         compareMessage) && (
-        <main ref={resultsRef} className="scroll-mt-20 bg-[#f7f8fc] px-4 py-12">
+        <main
+          ref={resultsRef}
+          className="scroll-mt-20 bg-gradient-to-br from-[#fffaf3] via-[#fff1fa] to-[#eef3ff] px-4 py-12"
+        >
           <div className="mx-auto max-w-7xl">
             {compareMessage && (
               <div className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm font-medium text-yellow-700">
@@ -345,9 +359,6 @@ export default function Home() {
             {products.length > 0 && (
               <section className="mb-12">
                 <div className="mb-6">
-                  <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                    SHOPPING RESULTS
-                  </span>
 
                   <h2 className="mt-3 text-3xl font-extralight text-gray-900">
                     Recommended Products

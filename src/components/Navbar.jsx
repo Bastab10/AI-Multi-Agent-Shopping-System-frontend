@@ -42,21 +42,17 @@ export default function Navbar() {
   ];
 
   const handleLogout = () => {
-    logout();
-    setMenuOpen(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("searchProducts");
+    localStorage.removeItem("compareProducts");
+
     navigate("/login");
   };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
       <div className="max-w-screen-2xl mx-auto h-[68px] px-5 sm:px-6 flex items-center justify-between">
-
-        
-        <Link
-          to="/"
-          className="flex items-center gap-2 shrink-0 group"
-        >
-          
+        <Link to="/" className="flex items-center gap-2 shrink-0 group">
           <div className="relative w-5 h-5 flex items-center justify-center">
             <Sparkles
               size={18}
@@ -65,16 +61,12 @@ export default function Navbar() {
             />
           </div>
 
-          
           <span className="text-[20px] font-medium tracking-tight text-gray-900">
             Shop<span className="text-blue-600">Intel</span>
           </span>
         </Link>
 
-        
         <div className="hidden lg:flex items-center gap-3">
-
-          
           {nav.map((item) => {
             const isActive = location.pathname === item.path;
 
@@ -100,11 +92,8 @@ export default function Navbar() {
             );
           })}
 
-          
           {isAuthenticated && (
             <div className="flex items-center gap-2 ml-2">
-
-              
               <button
                 onClick={handleLogout}
                 title="Logout"
@@ -119,16 +108,12 @@ export default function Navbar() {
                   transition-colors
                 "
               >
-                <LogOut
-                  size={16}
-                  strokeWidth={2.2}
-                />
+                <LogOut size={16} strokeWidth={2.2} />
               </button>
             </div>
           )}
         </div>
 
-        
         <button
           onClick={() => setMenuOpen((prev) => !prev)}
           className="
@@ -142,23 +127,15 @@ export default function Navbar() {
           "
           aria-label="Toggle menu"
         >
-          {menuOpen ? (
-            <X size={21} />
-          ) : (
-            <Menu size={21} />
-          )}
+          {menuOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
       </div>
 
-      
       {menuOpen && (
         <div className="lg:hidden border-t border-gray-100 bg-white">
           <div className="px-5 sm:px-6 py-4 flex flex-col gap-2">
-
-            
             {nav.map((item) => {
-              const isActive =
-                location.pathname === item.path;
+              const isActive = location.pathname === item.path;
 
               return (
                 <Link
@@ -196,9 +173,7 @@ export default function Navbar() {
               );
             })}
 
-            
             <div className="flex items-center gap-3 pt-3 mt-2 border-t border-gray-100">
-
               <Link
                 to="/wishlist"
                 onClick={() => setMenuOpen(false)}
@@ -242,11 +217,9 @@ export default function Navbar() {
               </Link>
             </div>
 
-            
             {isAuthenticated && (
               <>
                 <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
-
                   <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
                     <UserRound size={15} />
                   </div>
@@ -256,13 +229,10 @@ export default function Navbar() {
                       {user?.name || "User"}
                     </span>
 
-                    <span className="text-[11px] text-gray-400">
-                      Account
-                    </span>
+                    <span className="text-[11px] text-gray-400">Account</span>
                   </div>
                 </div>
 
-                
                 <button
                   onClick={handleLogout}
                   className="
