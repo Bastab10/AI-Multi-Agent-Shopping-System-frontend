@@ -1,12 +1,5 @@
-import axios from "axios";
+import api from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-  // baseURL: "https://ai-multi-agent-shopping-system.onrender.com/api",
-});
+export const registerUser = (data) => api.post("/auth/register", data);
 
-export const registerUser = (data) => API.post("/auth/register", data);
-
-export const loginUser = (data) => API.post("/auth/login", data);
-
-export default API;
+export const loginUser = (data) => api.post("/auth/login", data);

@@ -5,9 +5,6 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
-  ShoppingBag,
-  Sparkles,
-  ShieldCheck,
 } from "lucide-react";
 
 import { loginUser, registerUser } from "../services/authApi";

@@ -5,13 +5,10 @@ import Footer from "../components/Footer";
 import { compareProducts as compareAI } from "../services/comparisonApi";
 
 import {
-  Scale,
   Trash2,
   Bot,
-  Trophy,
   Sparkles,
   Check,
-  ArrowRight,
 } from "lucide-react";
 
 export default function Compare() {
@@ -149,18 +146,6 @@ export default function Compare() {
               "
             >
               <div className="max-w-sm">
-                <div
-                  className="
-                    mx-auto
-                    w-16 h-16
-                    rounded-2xl
-                    bg-blue-50
-                    text-blue-500
-                    flex items-center justify-center
-                  "
-                >
-                </div>
-                
                 <h2 className="mt-5 text-xl font-bold text-gray-900">
                   No products selected
                 </h2>

@@ -1,11 +1,6 @@
-import axios from "axios";
+import api from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-  // baseURL: "https://ai-multi-agent-shopping-system.onrender.com/api",
-});
-
-API.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
 
   if (token) {
@@ -16,11 +11,11 @@ API.interceptors.request.use((config) => {
 });
 
 export const getWishlist = () => {
-  return API.get("/wishlist");
+  return api.get("/wishlist");
 };
 
 export const addToWishlist = (product) => {
-  return API.post("/wishlist", {
+  return api.post("/wishlist", {
     productId: product.id,
     title: product.title,
     image: product.image,
@@ -32,11 +27,9 @@ export const addToWishlist = (product) => {
 };
 
 export const removeWishlistItem = (id) => {
-  return API.delete(`/wishlist/${id}`);
+  return api.delete(`/wishlist/${id}`);
 };
 
 export const clearWishlist = () => {
-  return API.delete("/wishlist");
+  return api.delete("/wishlist");
 };
-
-export default API;

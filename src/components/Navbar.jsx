@@ -42,10 +42,7 @@ export default function Navbar() {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("searchProducts");
-    localStorage.removeItem("compareProducts");
-
+    logout();
     navigate("/login");
   };
 

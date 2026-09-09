@@ -28,10 +28,10 @@ The frontend API client (`frontend/src/services/api.js`) currently points to a d
 
 ## Notable files
 
-- `src/components` — Reusable UI components (Navbar, ProductCard, ProductGrid, etc.).
+- `src/components` — Reusable UI components (Chatbot, Navbar, ProductCard, ProductGrid, etc.).
 - `src/pages` — Route-level pages (Home, Wishlist, Compare, Auth, AuthSuccess).
 - `src/context/AuthContext.jsx` — Authentication context and provider.
-- `src/services` — API wrappers for auth, product search, comparison, wishlist.
+- `src/services` — API wrappers for auth, chat, comparison, wishlist (all use shared axios instance from api.js).
 
 ## Running production build
 
