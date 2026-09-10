@@ -7,7 +7,10 @@ import {
   Star,
 } from "lucide-react";
 
-function RecommendationCard({ recommendation, products = [] }) {
+function RecommendationCard({
+  recommendation,
+  products = [],
+}) {
   if (!recommendation) return null;
 
   const cards = [
@@ -15,46 +18,54 @@ function RecommendationCard({ recommendation, products = [] }) {
       icon: Award,
       title: "Best Overall",
       subtitle: "Top Pick",
-      color: "bg-slate-900",
       data: recommendation.best_overall,
-      explanation: "Highest rated product with strong customer reviews.",
+      explanation:
+        "Highest rated product with strong customer reviews.",
     },
     {
       icon: DollarSign,
       title: "Best Budget",
       subtitle: "Value for Money",
-      color: "bg-blue-600",
       data: recommendation.best_budget,
-      explanation: "Lowest priced product among the available results.",
+      explanation:
+        "Lowest priced product among the available results.",
     },
     {
       icon: Sparkles,
       title: "Premium Choice",
       subtitle: "High-End",
-      color: "bg-slate-700",
       data: recommendation.premium_choice,
-      explanation: "Most premium and highest priced product in the results.",
+      explanation:
+        "Most premium and highest priced product in the results.",
     },
   ];
 
   const findOriginalProduct = (recommendedProduct) => {
-    if (!recommendedProduct || !products?.length) return null;
+    if (!recommendedProduct || !products?.length) {
+      return null;
+    }
 
-    const recommendedTitle = recommendedProduct.title?.toLowerCase()?.trim();
+    const recommendedTitle =
+      recommendedProduct.title?.toLowerCase()?.trim();
 
     if (!recommendedTitle) return null;
+
     const exactMatch = products.find(
-      (product) => product.title?.toLowerCase()?.trim() === recommendedTitle,
+      (product) =>
+        product.title?.toLowerCase()?.trim() ===
+        recommendedTitle
     );
 
     if (exactMatch) return exactMatch;
+
     const partialMatch = products.find((product) => {
       const title = product.title?.toLowerCase()?.trim();
 
       if (!title) return false;
 
       return (
-        title.includes(recommendedTitle) || recommendedTitle.includes(title)
+        title.includes(recommendedTitle) ||
+        recommendedTitle.includes(title)
       );
     });
 
@@ -63,6 +74,7 @@ function RecommendationCard({ recommendation, products = [] }) {
 
   return (
     <section className="w-full">
+      {/* Header */}
       <div className="mb-6">
         <div className="flex items-start gap-3">
           <div className="min-w-0">
@@ -91,12 +103,13 @@ function RecommendationCard({ recommendation, products = [] }) {
                 font-extralight
               "
             >
-              Personalized picks selected by AI based on price, value and
-              quality.
+              Personalized picks selected by AI based on price,
+              value and quality.
             </p>
           </div>
         </div>
 
+        {/* View All */}
         <button
           type="button"
           className="
@@ -113,15 +126,14 @@ function RecommendationCard({ recommendation, products = [] }) {
             py-2.5
             rounded-full
             border
-            border-gray-200
-            bg-white
+            border-white/70
+            bg-white/35
             text-sm
             sm:text-[11px]
             font-semibold
             text-blue-600
-            hover:bg-blue-50
+            hover:bg-white/55
             transition
-            
           "
         >
           View all recommendations
@@ -131,6 +143,7 @@ function RecommendationCard({ recommendation, products = [] }) {
         <div className="clear-both" />
       </div>
 
+      {/* Recommendation Cards */}
       <div
         className="
           grid
@@ -140,12 +153,12 @@ function RecommendationCard({ recommendation, products = [] }) {
         "
       >
         {cards.map((card, index) => {
-          const Icon = card.icon;
           const product = card.data;
 
           if (!product) return null;
 
-          const originalProduct = findOriginalProduct(product);
+          const originalProduct =
+            findOriginalProduct(product);
 
           const productImage =
             originalProduct?.image ||
@@ -154,34 +167,52 @@ function RecommendationCard({ recommendation, products = [] }) {
             product?.imageUrl ||
             null;
 
-          const productLink = product?.link || originalProduct?.link || null;
+          const productLink =
+            product?.link ||
+            originalProduct?.link ||
+            null;
 
-          const rating = originalProduct?.rating || product?.rating || "4.8";
+          const rating =
+            originalProduct?.rating ||
+            product?.rating ||
+            "4.8";
 
-          const reviews = originalProduct?.reviews || product?.reviews || 0;
+          const reviews =
+            originalProduct?.reviews ||
+            product?.reviews ||
+            0;
 
           return (
             <article
               key={index}
               className="
                 w-full
-                bg-white
-                rounded-2xl
-                border
-                border-gray-200
                 overflow-hidden
-                shadow-[0_2px_10px_rgba(15,23,42,0.04)]
+                rounded-2xl
+                border border-white/70
+                bg-gradient-to-br
+                from-white/45
+                via-purple-50/30
+                to-pink-50/35
+                backdrop-blur-xl
               "
             >
               <div className="p-4 sm:p-4">
+                {/* Category */}
                 <div className="mb-4">
-                  <h3 className="text-sm sm:text-[13px] font-bold text-gray-900">
+                  <h3
+                    className="
+                      text-sm
+                      sm:text-[13px]
+                      font-bold
+                      text-gray-900
+                    "
+                  >
                     {card.title}
                   </h3>
-
-                 
                 </div>
 
+                {/* Product */}
                 <div
                   className="
                     flex
@@ -189,6 +220,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                     gap-4
                   "
                 >
+                  {/* Image */}
                   <div
                     className="
                       w-[112px]
@@ -197,7 +229,8 @@ function RecommendationCard({ recommendation, products = [] }) {
                       sm:h-[92px]
                       shrink-0
                       rounded-xl
-                      bg-gray-50
+                      bg-white/25
+                      border border-white/50
                       flex
                       items-center
                       justify-center
@@ -207,7 +240,9 @@ function RecommendationCard({ recommendation, products = [] }) {
                     {productImage ? (
                       <img
                         src={productImage}
-                        alt={product.title || "Product"}
+                        alt={
+                          product.title || "Product"
+                        }
                         className="
                           w-full
                           h-full
@@ -216,7 +251,8 @@ function RecommendationCard({ recommendation, products = [] }) {
                           mix-blend-multiply
                         "
                         onError={(e) => {
-                          e.currentTarget.style.display = "none";
+                          e.currentTarget.style.display =
+                            "none";
                         }}
                       />
                     ) : (
@@ -230,7 +266,10 @@ function RecommendationCard({ recommendation, products = [] }) {
                           px-2
                         "
                       >
-                        <ShoppingCart size={20} className="text-gray-300" />
+                        <ShoppingCart
+                          size={20}
+                          className="text-gray-300"
+                        />
 
                         <span
                           className="
@@ -245,6 +284,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                     )}
                   </div>
 
+                  {/* Product Info */}
                   <div className="min-w-0 flex-1">
                     <h3
                       className="
@@ -256,7 +296,8 @@ function RecommendationCard({ recommendation, products = [] }) {
                         line-clamp-2
                       "
                     >
-                      {product.title || "Product not available"}
+                      {product.title ||
+                        "Product not available"}
                     </h3>
 
                     <p
@@ -270,6 +311,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                       {card.subtitle}
                     </p>
 
+                    {/* Price */}
                     <p
                       className="
                         mt-2
@@ -283,6 +325,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                       {product.price || "N/A"}
                     </p>
 
+                    {/* Rating */}
                     <div
                       className="
                         flex
@@ -323,6 +366,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                   </div>
                 </div>
 
+                {/* Explanation */}
                 <p
                   className="
                     mt-4
@@ -335,9 +379,11 @@ function RecommendationCard({ recommendation, products = [] }) {
                     sm:line-clamp-1
                   "
                 >
-                  {product.explanation || card.explanation}
+                  {product.explanation ||
+                    card.explanation}
                 </p>
 
+                {/* Actions */}
                 <div
                   className="
                     flex
@@ -347,9 +393,10 @@ function RecommendationCard({ recommendation, products = [] }) {
                     mt-4
                     pt-3
                     border-t
-                    border-gray-100
+                    border-white/60
                   "
                 >
+                  {/* Buy */}
                   {productLink ? (
                     <a
                       href={productLink}
@@ -380,6 +427,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                         size={15}
                         className="sm:w-[11px] sm:h-[11px]"
                       />
+
                       Buy Now
                     </a>
                   ) : (
@@ -403,6 +451,7 @@ function RecommendationCard({ recommendation, products = [] }) {
                     </button>
                   )}
 
+                  {/* External Link */}
                   {productLink && (
                     <a
                       href={productLink}
@@ -416,14 +465,13 @@ function RecommendationCard({ recommendation, products = [] }) {
                         sm:h-8
                         shrink-0
                         rounded-full
-                        border
-                        border-gray-300
-                        bg-white
+                        border border-white/70
+                        bg-white/30
                         flex
                         items-center
                         justify-center
                         active:scale-95
-                        hover:bg-gray-50
+                        hover:bg-white/50
                         transition-all
                       "
                     >

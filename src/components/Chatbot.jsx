@@ -63,9 +63,7 @@ export default function Chatbot({
     if (!text || loading) return;
 
     if (!isAuthenticated) {
-      setLoginMessage(
-        "Please login to use the AI Shopping Assistant."
-      );
+      setLoginMessage("Please login to use the AI Shopping Assistant.");
 
       if (messageTimeoutRef.current) {
         clearTimeout(messageTimeoutRef.current);
@@ -98,15 +96,11 @@ export default function Chatbot({
       }
 
       if (response?.recommendation) {
-        onRecommendationFound?.(
-          response.recommendation
-        );
+        onRecommendationFound?.(response.recommendation);
       }
 
       if (response?.comparison) {
-        onComparisonFound?.(
-          response.comparison
-        );
+        onComparisonFound?.(response.comparison);
       }
 
       const assistantMessage = {
@@ -117,10 +111,7 @@ export default function Chatbot({
         requirements: response?.requirements || null,
       };
 
-      setMessages((previous) => [
-        ...previous,
-        assistantMessage,
-      ]);
+      setMessages((previous) => [...previous, assistantMessage]);
     } catch (error) {
       console.error("Chat error:", error);
 
@@ -128,8 +119,7 @@ export default function Chatbot({
         ...previous,
         {
           role: "assistant",
-          content:
-            "Sorry, something went wrong. Please try again.",
+          content: "Sorry, something went wrong. Please try again.",
         },
       ]);
     } finally {
@@ -146,9 +136,28 @@ export default function Chatbot({
 
   return (
     <section className="w-full max-w-[550px]">
-      <div className="overflow-hidden rounded-[28px] border border-white/80 bg-white/60 shadow-[0_20px_60px_rgba(100,80,180,0.12)] backdrop-blur-xl">
-
-        <div className="flex items-center gap-3 border-b border-white/70 bg-white/35 px-5 py-4">
+      {/* CHATBOT */}
+      <div
+        className="
+          overflow-hidden
+          rounded-[28px]
+          border border-white/70
+          bg-gradient-to-br
+          from-white/45
+          via-purple-50/30
+          to-pink-50/35
+          backdrop-blur-xl
+        "
+      >
+        {/* HEADER */}
+        <div
+          className="
+            flex items-center gap-3
+            border-b border-white/60
+            bg-white/20
+            px-5 py-4
+          "
+        >
           <div>
             <h2 className="text-base font-semibold text-gray-900">
               AI Shopping Assistant
@@ -161,9 +170,17 @@ export default function Chatbot({
           </div>
         </div>
 
+        {/* MESSAGES */}
         <div
           ref={chatContainerRef}
-          className="h-[190px] overflow-y-auto px-4 py-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-violet-200"
+          className="
+            h-[190px]
+            overflow-y-auto
+            px-4 py-4
+            scrollbar-thin
+            scrollbar-track-transparent
+            scrollbar-thumb-violet-200
+          "
         >
           <div className="space-y-4">
             {messages.map((message, index) => (
@@ -178,8 +195,8 @@ export default function Chatbot({
                 <div
                   className={`max-w-[78%] rounded-[18px] px-4 py-3 text-sm leading-6 ${
                     message.role === "user"
-                      ? "rounded-br-md bg-violet-500 text-white"
-                      : "rounded-bl-md border border-white/90 bg-white/75 text-gray-800 shadow-sm"
+                      ? "rounded-br-md bg-violet-400/90 text-white"
+                      : "rounded-bl-md border border-white/65 bg-white/35 text-gray-800"
                   }`}
                 >
                   {message.content}
@@ -187,45 +204,43 @@ export default function Chatbot({
               </div>
             ))}
 
+            {/* LOGIN MESSAGE */}
             {loginMessage && (
               <div className="flex justify-center px-2">
                 <div
                   className="
-                    flex
-                    items-center
-                    gap-2
+                    flex items-center gap-2
                     rounded-xl
-                    border
-                    border-red-100
-                    bg-red-50/90
-                    px-4
-                    py-2.5
+                    border border-red-100/70
+                    bg-red-50/65
+                    px-4 py-2.5
                     text-center
-                    text-xs
-                    font-medium
+                    text-xs font-medium
                     text-red-500
-                    shadow-sm
-                    animate-in
-                    fade-in
+                    animate-in fade-in
                   "
                 >
-                  <LockKeyhole
-                    size={14}
-                    strokeWidth={2}
-                  />
-
+                  <LockKeyhole size={14} strokeWidth={2} />
                   <span>{loginMessage}</span>
                 </div>
               </div>
             )}
 
+            {/* LOADING */}
             {loading && (
               <div className="flex items-end gap-2.5">
-                <div className="flex items-center gap-2 rounded-[18px] rounded-bl-md border border-white/90 bg-white/75 px-4 py-3 text-sm text-gray-500 shadow-sm">
-                  <Loader2
-                    size={15}
-                    className="animate-spin"
-                  />
+                <div
+                  className="
+                    flex items-center gap-2
+                    rounded-[18px]
+                    rounded-bl-md
+                    border border-white/65
+                    bg-white/35
+                    px-4 py-3
+                    text-sm text-gray-500
+                  "
+                >
+                  <Loader2 size={15} className="animate-spin" />
                   Thinking...
                 </div>
               </div>
@@ -233,30 +248,61 @@ export default function Chatbot({
           </div>
         </div>
 
-        <div className="border-t border-white/80 bg-white/35 p-4">
-          <div className="flex items-center gap-2 rounded-2xl border border-violet-200/80 bg-white/65 px-2 py-2 transition focus-within:border-violet-300 focus-within:bg-white/80">
+        {/* INPUT */}
+        <div
+          className="
+            border-t border-white/60
+            bg-white/20
+            p-4
+          "
+        >
+          <div
+            className="
+              flex items-center gap-2
+              rounded-2xl
+              border border-violet-500/60
+              bg-white/35
+              px-2 py-2
+              transition
+              focus-within:border-violet-300/70
+              focus-within:bg-white/45
+            "
+          >
             <textarea
               value={input}
-              onChange={(event) =>
-                setInput(event.target.value)
-              }
+              onChange={(event) => setInput(event.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask me anything..."
               rows={1}
-              className="min-h-11 max-h-24 flex-1 resize-none bg-transparent px-3 py-2.5 text-sm text-gray-800 outline-none placeholder:text-gray-400"
+              className="
+                min-h-11 max-h-24
+                flex-1 resize-none
+                bg-transparent
+                px-3 py-2.5
+                text-sm text-black-600
+                outline-none
+                placeholder:text-gray-700
+              "
             />
 
             <button
               type="button"
               onClick={handleSend}
               disabled={!input.trim() || loading}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-400 text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-40"
+              className="
+                flex h-10 w-10 shrink-0
+                items-center justify-center
+                rounded-xl
+                bg-violet-900
+                text-white
+                transition
+                hover:bg-violet-500/90
+                disabled:cursor-not-allowed
+                disabled:opacity-40
+              "
             >
               {loading ? (
-                <Loader2
-                  size={18}
-                  className="animate-spin"
-                />
+                <Loader2 size={18} className="animate-spin" />
               ) : (
                 <Send size={18} />
               )}
