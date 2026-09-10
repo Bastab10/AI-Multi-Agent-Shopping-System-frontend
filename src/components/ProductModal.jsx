@@ -35,7 +35,6 @@ function ProductModal({
       "
       onClick={onClose}
     >
-      {/* Modal */}
       <div
         className="
           relative
@@ -57,7 +56,6 @@ function ProductModal({
         "
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="
@@ -81,7 +79,6 @@ function ProductModal({
           <X className="w-4 h-4" />
         </button>
 
-        {/* Scroll Area */}
         <div
           className="
             overflow-y-auto
@@ -100,12 +97,7 @@ function ProductModal({
               md:p-6
             "
           >
-            {/* ================================================= */}
-            {/* LEFT SIDE - PRODUCT IMAGE */}
-            {/* ================================================= */}
-
             <div className="flex flex-col">
-              {/* Main Image */}
               <div
                 className="
                   relative
@@ -124,7 +116,6 @@ function ProductModal({
                   overflow-hidden
                 "
               >
-                {/* Soft Glow */}
                 <div
                   className="
                     absolute
@@ -136,7 +127,6 @@ function ProductModal({
                   "
                 />
 
-                {/* Product Image */}
                 <img
                   src={productImage}
                   alt={product.title}
@@ -155,7 +145,6 @@ function ProductModal({
                 />
               </div>
 
-              {/* Thumbnail */}
               <div className="mt-3">
                 <div
                   className="
@@ -187,12 +176,7 @@ function ProductModal({
               </div>
             </div>
 
-            {/* ================================================= */}
-            {/* RIGHT SIDE - PRODUCT DETAILS */}
-            {/* ================================================= */}
-
             <div className="flex flex-col">
-              {/* Label */}
               <p
                 className="
                   text-[10px]
@@ -205,7 +189,6 @@ function ProductModal({
                 Product Details
               </p>
 
-              {/* Product Title */}
               <h2
                 className="
                   mt-1.5
@@ -222,7 +205,6 @@ function ProductModal({
                 {product.title}
               </h2>
 
-              {/* Accent Line */}
               <div
                 className="
                   w-10
@@ -233,7 +215,6 @@ function ProductModal({
                 "
               />
 
-              {/* Rating */}
               <div
                 className="
                   flex
@@ -284,7 +265,6 @@ function ProductModal({
                 </span>
               </div>
 
-              {/* Price */}
               <div className="mt-3">
                 <p
                   className="
@@ -312,7 +292,6 @@ function ProductModal({
                 </p>
               </div>
 
-              {/* Seller */}
               <div
                 className="
                   mt-3
@@ -360,7 +339,6 @@ function ProductModal({
                 </div>
               </div>
 
-              {/* Compare Section */}
               <div
                 className="
                   border-t
@@ -424,9 +402,7 @@ function ProductModal({
                 </div>
               </div>
 
-              {/* Main Actions */}
               <div className="grid grid-cols-2 gap-3 mt-4">
-                {/* Add To Compare */}
                 <button
                   onClick={() =>
                     toggleCompare(product)
@@ -457,7 +433,6 @@ function ProductModal({
                     : "Add to Compare"}
                 </button>
 
-                {/* Buy Now */}
                 <a
                   href={product.link}
                   target="_blank"
@@ -484,7 +459,6 @@ function ProductModal({
                 </a>
               </div>
 
-              {/* Visit Store */}
               <a
                 href={product.link}
                 target="_blank"

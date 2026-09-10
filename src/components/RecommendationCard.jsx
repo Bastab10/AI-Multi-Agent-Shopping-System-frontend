@@ -74,7 +74,6 @@ function RecommendationCard({
 
   return (
     <section className="w-full">
-      {/* Header */}
       <div className="mb-6">
         <div className="flex items-start gap-3">
           <div className="min-w-0">
@@ -109,7 +108,6 @@ function RecommendationCard({
           </div>
         </div>
 
-        {/* View All */}
         <button
           type="button"
           className="
@@ -143,7 +141,6 @@ function RecommendationCard({
         <div className="clear-both" />
       </div>
 
-      {/* Recommendation Cards */}
       <div
         className="
           grid
@@ -198,7 +195,6 @@ function RecommendationCard({
               "
             >
               <div className="p-4 sm:p-4">
-                {/* Category */}
                 <div className="mb-4">
                   <h3
                     className="
@@ -212,7 +208,6 @@ function RecommendationCard({
                   </h3>
                 </div>
 
-                {/* Product */}
                 <div
                   className="
                     flex
@@ -220,7 +215,6 @@ function RecommendationCard({
                     gap-4
                   "
                 >
-                  {/* Image */}
                   <div
                     className="
                       w-[112px]
@@ -284,7 +278,6 @@ function RecommendationCard({
                     )}
                   </div>
 
-                  {/* Product Info */}
                   <div className="min-w-0 flex-1">
                     <h3
                       className="
@@ -311,7 +304,6 @@ function RecommendationCard({
                       {card.subtitle}
                     </p>
 
-                    {/* Price */}
                     <p
                       className="
                         mt-2
@@ -325,7 +317,6 @@ function RecommendationCard({
                       {product.price || "N/A"}
                     </p>
 
-                    {/* Rating */}
                     <div
                       className="
                         flex
@@ -366,7 +357,6 @@ function RecommendationCard({
                   </div>
                 </div>
 
-                {/* Explanation */}
                 <p
                   className="
                     mt-4
@@ -383,7 +373,6 @@ function RecommendationCard({
                     card.explanation}
                 </p>
 
-                {/* Actions */}
                 <div
                   className="
                     flex
@@ -396,7 +385,6 @@ function RecommendationCard({
                     border-white/60
                   "
                 >
-                  {/* Buy */}
                   {productLink ? (
                     <a
                       href={productLink}
@@ -451,7 +439,6 @@ function RecommendationCard({
                     </button>
                   )}
 
-                  {/* External Link */}
                   {productLink && (
                     <a
                       href={productLink}

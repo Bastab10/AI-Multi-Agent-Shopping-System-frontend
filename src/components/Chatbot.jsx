@@ -136,7 +136,6 @@ export default function Chatbot({
 
   return (
     <section className="w-full max-w-[550px]">
-      {/* CHATBOT */}
       <div
         className="
           overflow-hidden
@@ -149,7 +148,6 @@ export default function Chatbot({
           backdrop-blur-xl
         "
       >
-        {/* HEADER */}
         <div
           className="
             flex items-center gap-3
@@ -170,7 +168,6 @@ export default function Chatbot({
           </div>
         </div>
 
-        {/* MESSAGES */}
         <div
           ref={chatContainerRef}
           className="
@@ -204,7 +201,6 @@ export default function Chatbot({
               </div>
             ))}
 
-            {/* LOGIN MESSAGE */}
             {loginMessage && (
               <div className="flex justify-center px-2">
                 <div
@@ -226,7 +222,6 @@ export default function Chatbot({
               </div>
             )}
 
-            {/* LOADING */}
             {loading && (
               <div className="flex items-end gap-2.5">
                 <div
@@ -248,7 +243,6 @@ export default function Chatbot({
           </div>
         </div>
 
-        {/* INPUT */}
         <div
           className="
             border-t border-white/60
