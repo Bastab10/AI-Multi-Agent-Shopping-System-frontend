@@ -11,15 +11,19 @@ import {
   Check,
 } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+
 export default function Compare() {
   const [products, setProducts] = useState([]);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { setCompareCount } = useAuth();
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("compareProducts") || "[]");
 
     setProducts(saved);
+    setCompareCount(saved.length);
   }, []);
 
   const removeProduct = (id) => {
@@ -29,6 +33,7 @@ export default function Compare() {
 
     localStorage.setItem("compareProducts", JSON.stringify(updated));
 
+    setCompareCount(updated.length);
     setResult(null);
   };
 
@@ -37,6 +42,7 @@ export default function Compare() {
 
     localStorage.removeItem("compareProducts");
 
+    setCompareCount(0);
     setResult(null);
   };
 

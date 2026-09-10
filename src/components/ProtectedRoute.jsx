@@ -6,7 +6,6 @@ function ProtectedRoute({ children }) {
 
   const token = localStorage.getItem("token");
 
-  // AuthContext is still checking localStorage
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -17,7 +16,6 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  // Not logged in
   if (!user || !token) {
     return <Navigate to="/login" replace />;
   }

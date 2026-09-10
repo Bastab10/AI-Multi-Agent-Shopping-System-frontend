@@ -16,15 +16,8 @@ function App() {
         <Route path="/register" element={<Auth />} />
 
         <Route path="/auth-success" element={<AuthSuccess />} />
-        
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+
+        <Route path="/" element={<Home />} />
 
         <Route
           path="/wishlist"
@@ -43,7 +36,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );

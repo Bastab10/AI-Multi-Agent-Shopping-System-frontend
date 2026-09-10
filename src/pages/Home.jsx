@@ -20,6 +20,8 @@ import Laptop from "../assets/laptop.png";
 import Watch from "../assets/watch.png";
 import Phone from "../assets/phone.png";
 
+import { useAuth } from "../context/AuthContext";
+
 export default function Home() {
   const [products, setProducts] = useState(() => {
     try {
@@ -33,6 +35,7 @@ export default function Home() {
   const [comparison, setComparison] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [wishlist, setWishlist] = useState([]);
+  const { setCompareCount } = useAuth();
 
   const [compareProducts, setCompareProducts] = useState(() => {
     try {
@@ -63,10 +66,6 @@ export default function Home() {
       window.history.scrollRestoration = "auto";
     };
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("compareProducts", JSON.stringify(compareProducts));
-  }, [compareProducts]);
 
   useEffect(() => {
     localStorage.setItem("searchProducts", JSON.stringify(products));
@@ -116,9 +115,9 @@ export default function Home() {
     const exists = compareProducts.find((item) => item.id === product.id);
 
     if (exists) {
-      setCompareProducts(
-        compareProducts.filter((item) => item.id !== product.id),
-      );
+      const updated = compareProducts.filter((item) => item.id !== product.id);
+      setCompareProducts(updated);
+      setCompareCount(updated.length);
       return;
     }
 
@@ -132,7 +131,9 @@ export default function Home() {
       return;
     }
 
-    setCompareProducts([...compareProducts, product]);
+    const updated = [...compareProducts, product];
+    setCompareProducts(updated);
+    setCompareCount(updated.length);
   };
 
   const handleProductsFound = (newProducts) => {

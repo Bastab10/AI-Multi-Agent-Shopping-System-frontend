@@ -1,24 +1,29 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, LockKeyhole } from "lucide-react";
 import { sendChatMessage } from "../services/chatApi";
+import { useAuth } from "../context/AuthContext";
 
 export default function Chatbot({
   onProductsFound,
   onRecommendationFound,
   onComparisonFound,
 }) {
+  const { isAuthenticated } = useAuth();
+
   const [messages, setMessages] = useState([
     {
       role: "assistant",
       content:
-        "Hi! I'm ShopIntel AI  Tell me what you're looking for, and I'll help you find the right product.",
+        "Hi! I'm ShopIntel AI. Tell me what you're looking for, and I'll help you find the right product.",
     },
   ]);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loginMessage, setLoginMessage] = useState("");
 
   const chatContainerRef = useRef(null);
+  const messageTimeoutRef = useRef(null);
 
   useEffect(() => {
     const container = chatContainerRef.current;
@@ -26,12 +31,36 @@ export default function Chatbot({
     if (!container) return;
 
     container.scrollTop = container.scrollHeight;
-  }, [messages, loading]);
+  }, [messages, loading, loginMessage]);
+
+  useEffect(() => {
+    return () => {
+      if (messageTimeoutRef.current) {
+        clearTimeout(messageTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSend = async () => {
     const text = input.trim();
 
     if (!text || loading) return;
+
+    if (!isAuthenticated) {
+      setLoginMessage(
+        "Please login to use the AI Shopping Assistant."
+      );
+
+      if (messageTimeoutRef.current) {
+        clearTimeout(messageTimeoutRef.current);
+      }
+
+      messageTimeoutRef.current = setTimeout(() => {
+        setLoginMessage("");
+      }, 3500);
+
+      return;
+    }
 
     const userMessage = {
       role: "user",
@@ -42,6 +71,7 @@ export default function Chatbot({
 
     setMessages(updatedMessages);
     setInput("");
+    setLoginMessage("");
     setLoading(true);
 
     try {
@@ -52,11 +82,15 @@ export default function Chatbot({
       }
 
       if (response?.recommendation) {
-        onRecommendationFound?.(response.recommendation);
+        onRecommendationFound?.(
+          response.recommendation
+        );
       }
 
       if (response?.comparison) {
-        onComparisonFound?.(response.comparison);
+        onComparisonFound?.(
+          response.comparison
+        );
       }
 
       const assistantMessage = {
@@ -67,7 +101,10 @@ export default function Chatbot({
         requirements: response?.requirements || null,
       };
 
-      setMessages((previous) => [...previous, assistantMessage]);
+      setMessages((previous) => [
+        ...previous,
+        assistantMessage,
+      ]);
     } catch (error) {
       console.error("Chat error:", error);
 
@@ -75,7 +112,8 @@ export default function Chatbot({
         ...previous,
         {
           role: "assistant",
-          content: "Sorry, something went wrong. Please try again.",
+          content:
+            "Sorry, something went wrong. Please try again.",
         },
       ]);
     } finally {
@@ -93,6 +131,7 @@ export default function Chatbot({
   return (
     <section className="w-full max-w-[550px]">
       <div className="overflow-hidden rounded-[28px] border border-white/80 bg-white/60 shadow-[0_20px_60px_rgba(100,80,180,0.12)] backdrop-blur-xl">
+
         <div className="flex items-center gap-3 border-b border-white/70 bg-white/35 px-5 py-4">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
@@ -108,14 +147,17 @@ export default function Chatbot({
 
         <div
           ref={chatContainerRef}
-          className="h-[190px] overflow-y-auto px-4 py-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-violet-200  "
+          className="h-[190px] overflow-y-auto px-4 py-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-violet-200"
         >
           <div className="space-y-4">
+
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex items-end gap-2.5 ${
-                  message.role === "user" ? "justify-end" : "justify-start"
+                  message.role === "user"
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
                 <div
@@ -130,21 +172,63 @@ export default function Chatbot({
               </div>
             ))}
 
+            {loginMessage && (
+              <div className="flex justify-center px-2">
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    border
+                    border-red-100
+                    bg-red-50/90
+                    px-4
+                    py-2.5
+                    text-center
+                    text-xs
+                    font-medium
+                    text-red-500
+                    shadow-sm
+                    animate-in
+                    fade-in
+                  "
+                >
+                  <LockKeyhole
+                    size={14}
+                    strokeWidth={2}
+                  />
+
+                  <span>{loginMessage}</span>
+                </div>
+              </div>
+            )}
+
             {loading && (
               <div className="flex items-end gap-2.5">
                 <div className="flex items-center gap-2 rounded-[18px] rounded-bl-md border border-white/90 bg-white/75 px-4 py-3 text-sm text-gray-500 shadow-sm">
+                  <Loader2
+                    size={15}
+                    className="animate-spin"
+                  />
+
                   Thinking...
                 </div>
               </div>
             )}
+
           </div>
         </div>
 
         <div className="border-t border-white/80 bg-white/35 p-4">
+
           <div className="flex items-center gap-2 rounded-2xl border border-violet-200/80 bg-white/65 px-2 py-2 transition focus-within:border-violet-300 focus-within:bg-white/80">
+
             <textarea
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={(event) =>
+                setInput(event.target.value)
+              }
               onKeyDown={handleKeyDown}
               placeholder="Ask me anything..."
               rows={1}
@@ -158,14 +242,17 @@ export default function Chatbot({
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-400 text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {loading ? (
-                <Loader2 size={18} className="animate-spin" />
+                <Loader2
+                  size={18}
+                  className="animate-spin"
+                />
               ) : (
                 <Send size={18} />
               )}
             </button>
           </div>
 
-          <p className="mt-2 text-center text-[11px] font-extralight  text-gray-400">
+          <p className="mt-2 text-center text-[11px] font-extralight text-gray-400">
             AI-powered shopping • Discover • Compare • Choose
           </p>
         </div>

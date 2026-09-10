@@ -15,9 +15,12 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { setWishlistCount } = useAuth();
 
   useEffect(() => {
     loadWishlist();
@@ -30,9 +33,11 @@ function Wishlist() {
       const res = await getWishlist();
 
       setWishlist(res.data.data || []);
+      setWishlistCount(res.data.data?.length || 0);
     } catch (err) {
       console.error("Wishlist loading error:", err);
       setWishlist([]);
+      setWishlistCount(0);
     } finally {
       setLoading(false);
     }
@@ -69,7 +74,6 @@ function Wishlist() {
       <main className="min-h-screen bg-[#f5f6f8] py-8">
         <div className="max-w-6xl mx-auto px-5 sm:px-6">
 
-          
           <div className="flex items-center justify-between mb-6">
 
             <div>
@@ -130,9 +134,6 @@ function Wishlist() {
             </div>
           )}
 
-       
-
-          
           {!loading && wishlist.length > 0 && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -149,7 +150,6 @@ function Wishlist() {
                     p-3
                   "
                 >
-                  
                   <div
                     className="
                       relative
@@ -173,7 +173,6 @@ function Wishlist() {
                       "
                     />
 
-                    
                     <button
                       onClick={() =>
                         removeProduct(product._id)
@@ -198,7 +197,6 @@ function Wishlist() {
                     </button>
                   </div>
 
-                  
                   <div className="min-w-0 flex-1">
 
                     <h2
@@ -212,8 +210,7 @@ function Wishlist() {
                     >
                       {product.title}
                     </h2>
-                    
-                    
+
                     <div className="mt-1.5 flex items-center gap-1">
                       <Star
                         size={13}
@@ -229,7 +226,7 @@ function Wishlist() {
                     <p className="mt-2 text-lg font-bold text-gray-900">
                       {product.price}
                     </p>
-                    
+
                     <div className="mt-1 flex items-center gap-1">
                       <Heart
                         size={11}
@@ -243,7 +240,6 @@ function Wishlist() {
                     </div>
                   </div>
 
-                  
                   <div className="shrink-0">
 
                     <a

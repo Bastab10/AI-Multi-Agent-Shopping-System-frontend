@@ -6,13 +6,14 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [compareCount, setCompareCount] = useState(0);
 
   useEffect(() => {
     const restoreAuth = () => {
       const token = localStorage.getItem("token");
       const savedUser = localStorage.getItem("user");
 
-      // No login information
       if (!token || token === "undefined" || !savedUser) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -22,12 +23,10 @@ export function AuthProvider({ children }) {
       }
 
       try {
-        // Check JWT token
         const payload = JSON.parse(atob(token.split(".")[1]));
 
         const currentTime = Date.now() / 1000;
 
-        // Token expired
         if (payload.exp && payload.exp < currentTime) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
@@ -37,12 +36,13 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        // Restore authorization
         axios.defaults.headers.common["Authorization"] =
           `Bearer ${token}`;
 
-        // Restore user
         setUser(JSON.parse(savedUser));
+
+        const compareProducts = JSON.parse(localStorage.getItem("compareProducts") || "[]");
+        setCompareCount(compareProducts.length);
       } catch (error) {
         console.error("Invalid token:", error);
 
@@ -58,7 +58,6 @@ export function AuthProvider({ children }) {
     restoreAuth();
   }, []);
 
-  // Login
   const login = (userData, token) => {
     if (!token || token === "undefined") return;
 
@@ -71,18 +70,18 @@ export function AuthProvider({ children }) {
     setUser(userData);
   };
 
-  // Logout
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-    // Clear previous user's shopping data
     localStorage.removeItem("searchProducts");
     localStorage.removeItem("compareProducts");
 
     delete axios.defaults.headers.common["Authorization"];
 
     setUser(null);
+    setWishlistCount(0);
+    setCompareCount(0);
   };
 
   return (
@@ -93,6 +92,10 @@ export function AuthProvider({ children }) {
         logout,
         loading,
         isAuthenticated: !!user,
+        wishlistCount,
+        compareCount,
+        setWishlistCount,
+        setCompareCount,
       }}
     >
       {children}

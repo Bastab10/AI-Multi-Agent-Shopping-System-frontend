@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import {
   UserRound,
-  ChevronDown,
+  LogIn,
   LogOut,
   Menu,
   X,
@@ -10,6 +11,7 @@ import {
   Repeat2,
   Sparkles,
 } from "lucide-react";
+
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -43,7 +45,6 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
   };
 
   return (
@@ -89,25 +90,44 @@ export default function Navbar() {
             );
           })}
 
-          {isAuthenticated && (
-            <div className="flex items-center gap-2 ml-2">
-              <button
-                onClick={handleLogout}
-                title="Logout"
-                className="
-                  w-9 h-9
-                  rounded-full
-                  bg-red-50
-                  text-red-500
-                  flex items-center justify-center
-                  hover:bg-red-100
-                  hover:text-red-600
-                  transition-colors
-                "
-              >
-                <LogOut size={16} strokeWidth={2.2} />
-              </button>
-            </div>
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="
+                ml-2
+                flex
+                items-center
+                gap-2
+                text-[14px]
+                font-medium
+                text-red-500
+                hover:text-red-600
+                transition-colors
+              "
+            >
+              <LogOut size={16} strokeWidth={2.2} />
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              title="Login"
+              className="
+                ml-2
+                flex
+                items-center
+                gap-2
+                text-[14px]
+                font-medium
+                text-red-500
+                hover:text-red-600
+                transition-colors
+              "
+            >
+              <LogIn size={16} strokeWidth={2.2} />
+              Login
+            </Link>
           )}
         </div>
 
@@ -115,9 +135,12 @@ export default function Navbar() {
           onClick={() => setMenuOpen((prev) => !prev)}
           className="
             lg:hidden
-            w-9 h-9
+            w-9
+            h-9
             rounded-lg
-            flex items-center justify-center
+            flex
+            items-center
+            justify-center
             text-gray-700
             hover:bg-gray-100
             transition
@@ -140,8 +163,11 @@ export default function Navbar() {
                   to={item.path}
                   onClick={() => setMenuOpen(false)}
                   className={`
-                    flex items-center justify-between
-                    px-4 py-3
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    py-3
                     rounded-xl
                     text-[14px]
                     font-medium
@@ -182,7 +208,10 @@ export default function Navbar() {
                   hover:bg-blue-50
                   text-gray-700
                   hover:text-blue-600
-                  flex items-center justify-center gap-1.5
+                  flex
+                  items-center
+                  justify-center
+                  gap-1.5
                   text-xs
                   font-medium
                   transition
@@ -203,7 +232,10 @@ export default function Navbar() {
                   hover:bg-blue-50
                   text-gray-700
                   hover:text-blue-600
-                  flex items-center justify-center gap-1.5
+                  flex
+                  items-center
+                  justify-center
+                  gap-1.5
                   text-xs
                   font-medium
                   transition
@@ -214,10 +246,21 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {isAuthenticated && (
+            {isAuthenticated ? (
               <>
                 <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
+                  <div
+                    className="
+                      w-8
+                      h-8
+                      rounded-full
+                      bg-blue-600
+                      text-white
+                      flex
+                      items-center
+                      justify-center
+                    "
+                  >
                     <UserRound size={15} />
                   </div>
 
@@ -234,22 +277,45 @@ export default function Navbar() {
                   onClick={handleLogout}
                   className="
                     w-full
-                    h-9
+                    h-10
                     mt-2
-                    rounded-lg
-                    bg-red-50
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    text-sm
+                    font-medium
                     text-red-500
-                    hover:bg-red-100
-                    flex items-center justify-center gap-2
-                    text-xs
-                    font-semibold
-                    transition
+                    hover:text-red-600
+                    transition-colors
                   "
                 >
-                  <LogOut size={15} />
+                  <LogOut size={16} strokeWidth={2.2} />
                   Logout
                 </button>
               </>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="
+                  w-full
+                  h-10
+                  mt-3
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  text-sm
+                  font-medium
+                  text-red-500
+                  hover:text-red-600
+                  transition-colors
+                "
+              >
+                <LogIn size={16} strokeWidth={2.2} />
+                Login
+              </Link>
             )}
           </div>
         </div>

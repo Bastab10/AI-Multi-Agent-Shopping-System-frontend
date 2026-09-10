@@ -15,10 +15,8 @@ function Footer() {
     <footer className=" bg-[#071713] text-white">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
 
-        {/* ================= MAIN FOOTER ================= */}
         <div className="grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
 
-          {/* ================= BRAND ================= */}
           <div>
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-400">
@@ -37,7 +35,6 @@ function Footer() {
               discover better deals and make smarter buying decisions.
             </p>
 
-            {/* ================= SUBSCRIBE ================= */}
             <div className="mt-5 flex h-10 max-w-[300px] items-center rounded-full border border-emerald-900 bg-[#0c2922] p-1">
               <input
                 type="email"
@@ -55,7 +52,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* ================= PAGES ================= */}
           <div>
             <h3 className="mb-5 text-sm font-semibold">
               Pages
@@ -92,7 +88,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* ================= SERVICES ================= */}
           <div>
             <h3 className="mb-5 text-sm font-semibold">
               Services
@@ -121,7 +116,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* ================= CONTACT ================= */}
           <div>
             <h3 className="mb-5 text-sm font-semibold">
               Contact
@@ -129,7 +123,6 @@ function Footer() {
 
             <div className="space-y-3">
 
-              {/* Email */}
               <div className="flex items-start gap-3">
                 <Mail
                   size={15}
@@ -141,7 +134,6 @@ function Footer() {
                 </span>
               </div>
 
-              {/* Phone */}
               <div className="flex items-center gap-3">
                 <Phone
                   size={15}
@@ -153,7 +145,6 @@ function Footer() {
                 </span>
               </div>
 
-              {/* Location */}
               <div className="flex items-start gap-3">
                 <MapPin
                   size={15}
@@ -167,7 +158,6 @@ function Footer() {
 
             </div>
 
-            {/* ================= SOCIAL / CONNECT ================= */}
             <div className="mt-5 flex gap-2">
 
               <a
@@ -198,15 +188,12 @@ function Footer() {
           </div>
         </div>
 
-        {/* ================= BOTTOM BAR ================= */}
         <div className="flex flex-col gap-4 border-t border-white/10 py-5 md:flex-row md:items-center md:justify-between">
 
-          {/* Copyright */}
           <p className="text-[11px] text-gray-500">
             © {year} ShopIntel. All rights reserved.
           </p>
 
-          {/* Legal Links */}
           <div className="flex gap-6">
             <Link
               to="#"
