@@ -18,13 +18,13 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setUser(null);
+        setCompareCount(0);
         setLoading(false);
         return;
       }
 
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
-
         const currentTime = Date.now() / 1000;
 
         if (payload.exp && payload.exp < currentTime) {
@@ -32,6 +32,7 @@ export function AuthProvider({ children }) {
           localStorage.removeItem("user");
 
           setUser(null);
+          setCompareCount(0);
           setLoading(false);
           return;
         }
@@ -41,8 +42,22 @@ export function AuthProvider({ children }) {
 
         setUser(JSON.parse(savedUser));
 
-        const compareProducts = JSON.parse(localStorage.getItem("compareProducts") || "[]");
-        setCompareCount(compareProducts.length);
+        const savedCompare =
+          localStorage.getItem("compareProducts");
+
+        try {
+          const parsedCompare = savedCompare
+            ? JSON.parse(savedCompare)
+            : [];
+
+          setCompareCount(
+            Array.isArray(parsedCompare)
+              ? parsedCompare.length
+              : 0
+          );
+        } catch {
+          setCompareCount(0);
+        }
       } catch (error) {
         console.error("Invalid token:", error);
 
@@ -50,6 +65,7 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("user");
 
         setUser(null);
+        setCompareCount(0);
       } finally {
         setLoading(false);
       }
@@ -62,7 +78,10 @@ export function AuthProvider({ children }) {
     if (!token || token === "undefined") return;
 
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem(
+      "user",
+      JSON.stringify(userData)
+    );
 
     axios.defaults.headers.common["Authorization"] =
       `Bearer ${token}`;
@@ -73,11 +92,12 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
     localStorage.removeItem("searchProducts");
     localStorage.removeItem("compareProducts");
 
     delete axios.defaults.headers.common["Authorization"];
+
+    window.dispatchEvent(new Event("auth-logout"));
 
     setUser(null);
     setWishlistCount(0);

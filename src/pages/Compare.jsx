@@ -20,30 +20,57 @@ export default function Compare() {
   const { setCompareCount } = useAuth();
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("compareProducts") || "[]");
+    const loadProducts = () => {
+      try {
+        const saved = localStorage.getItem("compareProducts");
+        const parsed = saved ? JSON.parse(saved) : [];
 
-    setProducts(saved);
-    setCompareCount(saved.length);
-  }, []);
+        setProducts(Array.isArray(parsed) ? parsed : []);
+        setCompareCount(Array.isArray(parsed) ? parsed.length : 0);
+      } catch {
+        setProducts([]);
+        setCompareCount(0);
+      }
+    };
+
+    loadProducts();
+
+    window.addEventListener("storage", loadProducts);
+    window.addEventListener("compare-updated", loadProducts);
+
+    return () => {
+      window.removeEventListener("storage", loadProducts);
+      window.removeEventListener("compare-updated", loadProducts);
+    };
+  }, [setCompareCount]);
+
+  const saveProducts = (updated) => {
+    setProducts(updated);
+    localStorage.setItem(
+      "compareProducts",
+      JSON.stringify(updated)
+    );
+    setCompareCount(updated.length);
+    window.dispatchEvent(new Event("compare-updated"));
+  };
 
   const removeProduct = (id) => {
-    const updated = products.filter((p) => p.id !== id);
+    const updated = products.filter(
+      (product) => product.id !== id
+    );
 
-    setProducts(updated);
-
-    localStorage.setItem("compareProducts", JSON.stringify(updated));
-
-    setCompareCount(updated.length);
+    saveProducts(updated);
     setResult(null);
   };
 
   const clearAll = () => {
-    setProducts([]);
-
     localStorage.removeItem("compareProducts");
 
+    setProducts([]);
     setCompareCount(0);
     setResult(null);
+
+    window.dispatchEvent(new Event("compare-updated"));
   };
 
   const handleCompare = async () => {
@@ -73,7 +100,6 @@ export default function Compare() {
 
       <main className="min-h-screen bg-[#f6f7f9] py-8">
         <div className="max-w-6xl mx-auto px-5 sm:px-6">
-          
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-7">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -160,7 +186,6 @@ export default function Compare() {
                   Add products to compare their prices, ratings, sellers and
                   AI-powered insights.
                 </p>
-
               </div>
             </div>
           ) : (
@@ -244,7 +269,7 @@ export default function Compare() {
                                   "
                                 />
                               </div>
-                              
+
                               <div className="min-w-0">
                                 <p
                                   className="
@@ -271,32 +296,6 @@ export default function Compare() {
                             </span>
                           </td>
 
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
                           <td className="px-4 py-4">
                             <div className="inline-flex items-center gap-1.5">
                               <span className="text-sm font-semibold text-gray-800">
@@ -311,13 +310,6 @@ export default function Compare() {
                             </div>
                           </td>
 
-                          
-                          
-                          
-                          
-                          
-                          
-                          
                           <td className="px-4 py-4">
                             <span
                               className="
@@ -335,10 +327,11 @@ export default function Compare() {
                             </span>
                           </td>
 
-                          
                           <td className="px-4 py-4 text-right">
                             <button
-                              onClick={() => removeProduct(product.id)}
+                              onClick={() =>
+                                removeProduct(product.id)
+                              }
                               className="
                                 inline-flex
                                 items-center
@@ -395,35 +388,8 @@ export default function Compare() {
                 </div>
               )}
 
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
               {result && !loading && (
                 <div className="mt-6">
-                  
                   <div className="flex items-center gap-3 mb-4">
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">
@@ -436,9 +402,7 @@ export default function Compare() {
                     </div>
                   </div>
 
-                  
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
                     <div
                       className="
                         rounded-2xl
@@ -463,7 +427,6 @@ export default function Compare() {
                       </div>
                     </div>
 
-                    
                     <div
                       className="
                         rounded-2xl

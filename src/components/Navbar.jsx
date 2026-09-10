@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import {
   UserRound,
@@ -18,7 +18,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   const {
     user,
@@ -45,12 +44,27 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout();
+    setMenuOpen(false);
+  };
+
+  const handleLogoClick = () => {
+    sessionStorage.setItem("clearHomeProducts", "true");
+
+    if (location.pathname === "/") {
+      window.dispatchEvent(new Event("clear-home-products"));
+    }
+
+    setMenuOpen(false);
   };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
       <div className="max-w-screen-2xl mx-auto h-[68px] px-5 sm:px-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 shrink-0 group">
+        <Link
+          to="/"
+          onClick={handleLogoClick}
+          className="flex items-center gap-2 shrink-0 group"
+        >
           <div className="relative w-5 h-5 flex items-center justify-center">
             <Sparkles
               size={18}
@@ -269,7 +283,9 @@ export default function Navbar() {
                       {user?.name || "User"}
                     </span>
 
-                    <span className="text-[11px] text-gray-400">Account</span>
+                    <span className="text-[11px] text-gray-400">
+                      Account
+                    </span>
                   </div>
                 </div>
 

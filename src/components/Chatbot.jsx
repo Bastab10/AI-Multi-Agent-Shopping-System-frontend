@@ -41,6 +41,22 @@ export default function Chatbot({
     };
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setMessages([
+        {
+          role: "assistant",
+          content:
+            "Hi! I'm ShopIntel AI. Tell me what you're looking for, and I'll help you find the right product.",
+        },
+      ]);
+
+      setInput("");
+      setLoading(false);
+      setLoginMessage("");
+    }
+  }, [isAuthenticated]);
+
   const handleSend = async () => {
     const text = input.trim();
 
@@ -150,7 +166,6 @@ export default function Chatbot({
           className="h-[190px] overflow-y-auto px-4 py-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-violet-200"
         >
           <div className="space-y-4">
-
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -211,19 +226,15 @@ export default function Chatbot({
                     size={15}
                     className="animate-spin"
                   />
-
                   Thinking...
                 </div>
               </div>
             )}
-
           </div>
         </div>
 
         <div className="border-t border-white/80 bg-white/35 p-4">
-
           <div className="flex items-center gap-2 rounded-2xl border border-violet-200/80 bg-white/65 px-2 py-2 transition focus-within:border-violet-300 focus-within:bg-white/80">
-
             <textarea
               value={input}
               onChange={(event) =>

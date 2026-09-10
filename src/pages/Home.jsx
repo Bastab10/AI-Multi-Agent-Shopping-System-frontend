@@ -31,16 +31,19 @@ export default function Home() {
       return [];
     }
   });
+
   const [recommendation, setRecommendation] = useState(null);
   const [comparison, setComparison] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [wishlist, setWishlist] = useState([]);
+
   const { setCompareCount } = useAuth();
 
   const [compareProducts, setCompareProducts] = useState(() => {
     try {
       const saved = localStorage.getItem("compareProducts");
-      return saved ? JSON.parse(saved) : [];
+      const parsed = saved ? JSON.parse(saved) : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch {
       return [];
     }
@@ -50,6 +53,7 @@ export default function Home() {
 
   const resultsRef = useRef(null);
   const shouldScrollToResults = useRef(false);
+  const compareTimeoutRef = useRef(null);
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -68,11 +72,106 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("searchProducts", JSON.stringify(products));
+    const clearHomeState = () => {
+      sessionStorage.removeItem("clearHomeProducts");
+
+      localStorage.removeItem("searchProducts");
+      localStorage.removeItem("compareProducts");
+
+      setProducts([]);
+      setRecommendation(null);
+      setComparison(null);
+      setSelectedProduct(null);
+      setCompareProducts([]);
+      setCompareMessage("");
+      setCompareCount(0);
+    };
+
+    const handleClearHomeProducts = () => {
+      clearHomeState();
+    };
+
+    const handleLogout = () => {
+      clearHomeState();
+    };
+
+    if (
+      sessionStorage.getItem("clearHomeProducts") ===
+      "true"
+    ) {
+      clearHomeState();
+    }
+
+    window.addEventListener(
+      "clear-home-products",
+      handleClearHomeProducts
+    );
+
+    window.addEventListener(
+      "auth-logout",
+      handleLogout
+    );
+
+    return () => {
+      window.removeEventListener(
+        "clear-home-products",
+        handleClearHomeProducts
+      );
+
+      window.removeEventListener(
+        "auth-logout",
+        handleLogout
+      );
+    };
+  }, [setCompareCount]);
+
+  useEffect(() => {
+    const handleCompareUpdated = () => {
+      try {
+        const saved =
+          localStorage.getItem("compareProducts");
+
+        const parsed = saved ? JSON.parse(saved) : [];
+
+        const updated = Array.isArray(parsed)
+          ? parsed
+          : [];
+
+        setCompareProducts(updated);
+        setCompareCount(updated.length);
+      } catch {
+        setCompareProducts([]);
+        setCompareCount(0);
+      }
+    };
+
+    window.addEventListener(
+      "compare-updated",
+      handleCompareUpdated
+    );
+
+    return () => {
+      window.removeEventListener(
+        "compare-updated",
+        handleCompareUpdated
+      );
+    };
+  }, [setCompareCount]);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      localStorage.setItem(
+        "searchProducts",
+        JSON.stringify(products)
+      );
+    }
   }, [products]);
 
   useEffect(() => {
-    if (shouldScrollToResults.current && products.length > 0) {
+    if (
+      shouldScrollToResults.current &&
+      products.length > 0
+    ) {
       const timer = setTimeout(() => {
         resultsRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -86,6 +185,14 @@ export default function Home() {
     }
   }, [products]);
 
+  useEffect(() => {
+    return () => {
+      if (compareTimeoutRef.current) {
+        clearTimeout(compareTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const loadWishlist = async () => {
     try {
       const res = await getWishlist();
@@ -97,7 +204,9 @@ export default function Home() {
 
   const toggleWishlist = async (product) => {
     try {
-      const exists = wishlist.find((item) => item.productId === product.id);
+      const exists = wishlist.find(
+        (item) => item.productId === product.id
+      );
 
       if (exists) {
         await removeWishlistItem(exists._id);
@@ -112,32 +221,84 @@ export default function Home() {
   };
 
   const toggleCompare = (product) => {
-    const exists = compareProducts.find((item) => item.id === product.id);
+    let currentProducts = [];
 
-    if (exists) {
-      const updated = compareProducts.filter((item) => item.id !== product.id);
-      setCompareProducts(updated);
-      setCompareCount(updated.length);
+    try {
+      const saved =
+        localStorage.getItem("compareProducts");
+
+      const parsed = saved ? JSON.parse(saved) : [];
+
+      currentProducts = Array.isArray(parsed)
+        ? parsed
+        : [];
+    } catch {
+      currentProducts = [];
+    }
+
+    const isAlreadyCompared = currentProducts.some(
+      (item) => item.id === product.id
+    );
+
+    if (isAlreadyCompared) {
+      const updatedProducts = currentProducts.filter(
+        (item) => item.id !== product.id
+      );
+
+      localStorage.setItem(
+        "compareProducts",
+        JSON.stringify(updatedProducts)
+      );
+
+      setCompareProducts(updatedProducts);
+      setCompareCount(updatedProducts.length);
+
+      window.dispatchEvent(
+        new Event("compare-updated")
+      );
+
       return;
     }
 
-    if (compareProducts.length >= 3) {
-      setCompareMessage("Maximum 3 products can be compared.");
+    if (currentProducts.length >= 3) {
+      if (compareTimeoutRef.current) {
+        clearTimeout(compareTimeoutRef.current);
+      }
 
-      setTimeout(() => {
+      setCompareMessage(
+        "You can compare maximum 3 products."
+      );
+
+      compareTimeoutRef.current = setTimeout(() => {
         setCompareMessage("");
       }, 3000);
 
       return;
     }
 
-    const updated = [...compareProducts, product];
-    setCompareProducts(updated);
-    setCompareCount(updated.length);
+    const updatedProducts = [
+      ...currentProducts,
+      product,
+    ];
+
+    localStorage.setItem(
+      "compareProducts",
+      JSON.stringify(updatedProducts)
+    );
+
+    setCompareProducts(updatedProducts);
+    setCompareCount(updatedProducts.length);
+
+    window.dispatchEvent(
+      new Event("compare-updated")
+    );
   };
 
   const handleProductsFound = (newProducts) => {
-    if (!Array.isArray(newProducts) || newProducts.length === 0) {
+    if (
+      !Array.isArray(newProducts) ||
+      newProducts.length === 0
+    ) {
       return;
     }
 
@@ -145,7 +306,9 @@ export default function Home() {
     setProducts(newProducts);
   };
 
-  const handleRecommendationFound = (newRecommendation) => {
+  const handleRecommendationFound = (
+    newRecommendation
+  ) => {
     if (!newRecommendation) {
       return;
     }
@@ -174,22 +337,30 @@ export default function Home() {
               key={index}
               className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
             >
-              {typeof item === "object" && item !== null ? (
-                Object.entries(item).map(([key, value]) => (
-                  <div key={key} className="mb-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                      {key.replace(/_/g, " ")}
-                    </p>
+              {typeof item === "object" &&
+              item !== null ? (
+                Object.entries(item).map(
+                  ([key, value]) => (
+                    <div
+                      key={key}
+                      className="mb-4"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                        {key.replace(/_/g, " ")}
+                      </p>
 
-                    <p className="mt-1 text-sm text-gray-800">
-                      {typeof value === "object"
-                        ? JSON.stringify(value)
-                        : String(value)}
-                    </p>
-                  </div>
-                ))
+                      <p className="mt-1 text-sm text-gray-800">
+                        {typeof value === "object"
+                          ? JSON.stringify(value)
+                          : String(value)}
+                      </p>
+                    </div>
+                  )
+                )
               ) : (
-                <p className="text-gray-700">{String(item)}</p>
+                <p className="text-gray-700">
+                  {String(item)}
+                </p>
               )}
             </div>
           ))}
@@ -197,30 +368,39 @@ export default function Home() {
       );
     }
 
-    if (typeof comparison === "object" && comparison !== null) {
+    if (
+      typeof comparison === "object" &&
+      comparison !== null
+    ) {
       return (
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
           <div className="divide-y divide-gray-200">
-            {Object.entries(comparison).map(([key, value]) => (
-              <div
-                key={key}
-                className="grid gap-3 px-6 py-5 md:grid-cols-[220px_1fr]"
-              >
-                <div className="font-semibold capitalize text-gray-700">
-                  {key.replace(/_/g, " ")}
-                </div>
+            {Object.entries(comparison).map(
+              ([key, value]) => (
+                <div
+                  key={key}
+                  className="grid gap-3 px-6 py-5 md:grid-cols-[220px_1fr]"
+                >
+                  <div className="font-semibold capitalize text-gray-700">
+                    {key.replace(/_/g, " ")}
+                  </div>
 
-                <div className="text-gray-600">
-                  {typeof value === "object" ? (
-                    <pre className="whitespace-pre-wrap text-sm">
-                      {JSON.stringify(value, null, 2)}
-                    </pre>
-                  ) : (
-                    String(value)
-                  )}
+                  <div className="text-gray-600">
+                    {typeof value === "object" ? (
+                      <pre className="whitespace-pre-wrap text-sm">
+                        {JSON.stringify(
+                          value,
+                          null,
+                          2
+                        )}
+                      </pre>
+                    ) : (
+                      String(value)
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </div>
       );
@@ -235,6 +415,33 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
+      {compareMessage && (
+        <div
+          role="alert"
+          className="
+            fixed
+            top-24
+            left-1/2
+            z-[999999]
+            -translate-x-1/2
+            whitespace-nowrap
+            rounded-xl
+            border
+            border-yellow-300
+            bg-yellow-50
+            px-5
+            py-3
+            text-sm
+            font-semibold
+            text-yellow-800
+            shadow-xl
+            pointer-events-none
+          "
+        >
+          {compareMessage}
+        </div>
+      )}
+
       <Navbar />
 
       <section className="relative min-h-[calc(100vh-72px)] overflow-hidden bg-gradient-to-br from-[#fffaf3] via-[#fff1fa] to-[#eef3ff]">
@@ -259,13 +466,15 @@ export default function Home() {
               className="flex flex-col justify-center"
             >
               <div className="mb-5">
-                <h1 className="mt-5 text-5xl font-black leading-[0.9] font-extralight  text-gray-950 sm:text-6xl">
+                <h1 className="mt-5 text-5xl font-black leading-[0.9] font-extralight text-gray-950 sm:text-6xl">
                   Smart
                   <br />
+
                   <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
                     SHOPPING
                   </span>
                 </h1>
+
                 <p className="mt-5 text-gray-600 font-extralight leading-7">
                   AI-powered shopping assistant that helps you compare products,
                   discover better deals and make smarter buying decisions.
@@ -275,8 +484,12 @@ export default function Home() {
               <div className="w-full max-w-[550px]">
                 <Chatbot
                   onProductsFound={handleProductsFound}
-                  onRecommendationFound={handleRecommendationFound}
-                  onComparisonFound={handleComparisonFound}
+                  onRecommendationFound={
+                    handleRecommendationFound
+                  }
+                  onComparisonFound={
+                    handleComparisonFound
+                  }
                 />
               </div>
             </motion.div>
@@ -335,19 +548,12 @@ export default function Home() {
 
       {(products.length > 0 ||
         recommendation ||
-        comparison ||
-        compareMessage) && (
+        comparison) && (
         <main
           ref={resultsRef}
           className="scroll-mt-20 bg-gradient-to-br from-[#fffaf3] via-[#fff1fa] to-[#eef3ff] px-4 py-12"
         >
           <div className="mx-auto max-w-7xl">
-            {compareMessage && (
-              <div className="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm font-medium text-yellow-700">
-                {compareMessage}
-              </div>
-            )}
-
             {recommendation && (
               <section className="mb-12">
                 <RecommendationCard
@@ -360,7 +566,6 @@ export default function Home() {
             {products.length > 0 && (
               <section className="mb-12">
                 <div className="mb-6">
-
                   <h2 className="mt-3 text-3xl font-extralight text-gray-900">
                     Recommended Products
                   </h2>
