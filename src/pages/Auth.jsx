@@ -84,7 +84,7 @@ export default function Auth() {
 
   const handleGoogleLogin = () => {
     window.location.href =
-      "https://ai-multi-agent-shopping-system.onrender.com/api/auth/google";
+      "https://ai-multi-agent-shopping-system-production.up.railway.app/api/auth/google";
   };
 
   const handleModeChange = () => {
