@@ -23,37 +23,83 @@ import Phone from "../assets/phone.png";
 import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
-  const [products, setProducts] = useState(() => {
-    try {
-      const saved = localStorage.getItem("searchProducts");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { user, loading, setCompareCount } = useAuth();
 
+  const [products, setProducts] = useState([]);
   const [recommendation, setRecommendation] = useState(null);
   const [comparison, setComparison] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [wishlist, setWishlist] = useState([]);
-
-  const { setCompareCount } = useAuth();
-
-  const [compareProducts, setCompareProducts] = useState(() => {
-    try {
-      const saved = localStorage.getItem("compareProducts");
-      const parsed = saved ? JSON.parse(saved) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  });
-
+  const [compareProducts, setCompareProducts] = useState([]);
   const [compareMessage, setCompareMessage] = useState("");
 
   const resultsRef = useRef(null);
   const shouldScrollToResults = useRef(false);
   const compareTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    if (!user) {
+      localStorage.removeItem("searchProducts");
+      localStorage.removeItem("compareProducts");
+
+      setProducts([]);
+      setRecommendation(null);
+      setComparison(null);
+      setSelectedProduct(null);
+      setWishlist([]);
+      setCompareProducts([]);
+      setCompareMessage("");
+      setCompareCount(0);
+
+      return;
+    }
+
+    try {
+      const savedProducts = localStorage.getItem("searchProducts");
+
+      if (savedProducts) {
+        const parsedProducts = JSON.parse(savedProducts);
+
+        setProducts(Array.isArray(parsedProducts) ? parsedProducts : []);
+      } else {
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error("Products loading error:", error);
+
+      setProducts([]);
+    }
+
+    try {
+      const savedCompareProducts = localStorage.getItem("compareProducts");
+
+      if (savedCompareProducts) {
+        const parsedCompareProducts = JSON.parse(savedCompareProducts);
+
+        const updatedCompareProducts = Array.isArray(parsedCompareProducts)
+          ? parsedCompareProducts
+          : [];
+
+        setCompareProducts(updatedCompareProducts);
+
+        setCompareCount(updatedCompareProducts.length);
+      } else {
+        setCompareProducts([]);
+        setCompareCount(0);
+      }
+    } catch (error) {
+      console.error("Compare products loading error:", error);
+
+      setCompareProducts([]);
+      setCompareCount(0);
+    }
+
+    loadWishlist();
+  }, [user, loading, setCompareCount]);
 
   useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -63,8 +109,6 @@ export default function Home() {
       left: 0,
       behavior: "auto",
     });
-
-    loadWishlist();
 
     return () => {
       window.history.scrollRestoration = "auto";
@@ -76,12 +120,14 @@ export default function Home() {
       sessionStorage.removeItem("clearHomeProducts");
 
       localStorage.removeItem("searchProducts");
+
       localStorage.removeItem("compareProducts");
 
       setProducts([]);
       setRecommendation(null);
       setComparison(null);
       setSelectedProduct(null);
+      setWishlist([]);
       setCompareProducts([]);
       setCompareMessage("");
       setCompareCount(0);
@@ -95,83 +141,73 @@ export default function Home() {
       clearHomeState();
     };
 
-    if (
-      sessionStorage.getItem("clearHomeProducts") ===
-      "true"
-    ) {
+    if (sessionStorage.getItem("clearHomeProducts") === "true") {
       clearHomeState();
     }
 
-    window.addEventListener(
-      "clear-home-products",
-      handleClearHomeProducts
-    );
+    window.addEventListener("clear-home-products", handleClearHomeProducts);
 
-    window.addEventListener(
-      "auth-logout",
-      handleLogout
-    );
+    window.addEventListener("auth-logout", handleLogout);
 
     return () => {
       window.removeEventListener(
         "clear-home-products",
-        handleClearHomeProducts
+        handleClearHomeProducts,
       );
 
-      window.removeEventListener(
-        "auth-logout",
-        handleLogout
-      );
+      window.removeEventListener("auth-logout", handleLogout);
     };
   }, [setCompareCount]);
 
   useEffect(() => {
     const handleCompareUpdated = () => {
+      if (!user) {
+        setCompareProducts([]);
+        setCompareCount(0);
+        return;
+      }
+
       try {
-        const saved =
-          localStorage.getItem("compareProducts");
+        const saved = localStorage.getItem("compareProducts");
 
         const parsed = saved ? JSON.parse(saved) : [];
 
-        const updated = Array.isArray(parsed)
-          ? parsed
-          : [];
+        const updated = Array.isArray(parsed) ? parsed : [];
 
         setCompareProducts(updated);
         setCompareCount(updated.length);
-      } catch {
+      } catch (error) {
+        console.error("Compare update error:", error);
+
         setCompareProducts([]);
         setCompareCount(0);
       }
     };
 
-    window.addEventListener(
-      "compare-updated",
-      handleCompareUpdated
-    );
+    window.addEventListener("compare-updated", handleCompareUpdated);
 
     return () => {
-      window.removeEventListener(
-        "compare-updated",
-        handleCompareUpdated
-      );
+      window.removeEventListener("compare-updated", handleCompareUpdated);
     };
-  }, [setCompareCount]);
+  }, [user, setCompareCount]);
 
   useEffect(() => {
-    if (products.length > 0) {
-      localStorage.setItem(
-        "searchProducts",
-        JSON.stringify(products)
-      );
+    if (loading) {
+      return;
     }
-  }, [products]);
+
+    if (!user) {
+      localStorage.removeItem("searchProducts");
+      return;
+    }
+
+    if (products.length > 0) {
+      localStorage.setItem("searchProducts", JSON.stringify(products));
+    }
+  }, [products, user, loading]);
 
   useEffect(() => {
-    if (
-      shouldScrollToResults.current &&
-      products.length > 0
-    ) {
+    if (shouldScrollToResults.current && products.length > 0) {
       const timer = setTimeout(() => {
         resultsRef.current?.scrollIntoView({
           behavior: "smooth",
@@ -181,7 +217,9 @@ export default function Home() {
         shouldScrollToResults.current = false;
       }, 300);
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [products]);
 
@@ -194,19 +232,29 @@ export default function Home() {
   }, []);
 
   const loadWishlist = async () => {
+    if (!user) {
+      setWishlist([]);
+      return;
+    }
+
     try {
       const res = await getWishlist();
+
       setWishlist(res?.data?.data || []);
     } catch (error) {
       console.error("Wishlist loading error:", error);
+
+      setWishlist([]);
     }
   };
 
   const toggleWishlist = async (product) => {
+    if (!user) {
+      return;
+    }
+
     try {
-      const exists = wishlist.find(
-        (item) => item.productId === product.id
-      );
+      const exists = wishlist.find((item) => item.productId === product.id);
 
       if (exists) {
         await removeWishlistItem(exists._id);
@@ -221,41 +269,40 @@ export default function Home() {
   };
 
   const toggleCompare = (product) => {
+    if (!user) {
+      return;
+    }
+
     let currentProducts = [];
 
     try {
-      const saved =
-        localStorage.getItem("compareProducts");
+      const saved = localStorage.getItem("compareProducts");
 
       const parsed = saved ? JSON.parse(saved) : [];
 
-      currentProducts = Array.isArray(parsed)
-        ? parsed
-        : [];
-    } catch {
+      currentProducts = Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error("Compare parsing error:", error);
+
       currentProducts = [];
     }
 
     const isAlreadyCompared = currentProducts.some(
-      (item) => item.id === product.id
+      (item) => item.id === product.id,
     );
 
     if (isAlreadyCompared) {
       const updatedProducts = currentProducts.filter(
-        (item) => item.id !== product.id
+        (item) => item.id !== product.id,
       );
 
-      localStorage.setItem(
-        "compareProducts",
-        JSON.stringify(updatedProducts)
-      );
+      localStorage.setItem("compareProducts", JSON.stringify(updatedProducts));
 
       setCompareProducts(updatedProducts);
+
       setCompareCount(updatedProducts.length);
 
-      window.dispatchEvent(
-        new Event("compare-updated")
-      );
+      window.dispatchEvent(new Event("compare-updated"));
 
       return;
     }
@@ -265,9 +312,7 @@ export default function Home() {
         clearTimeout(compareTimeoutRef.current);
       }
 
-      setCompareMessage(
-        "You can compare maximum 3 products."
-      );
+      setCompareMessage("You can compare maximum 3 products.");
 
       compareTimeoutRef.current = setTimeout(() => {
         setCompareMessage("");
@@ -276,29 +321,23 @@ export default function Home() {
       return;
     }
 
-    const updatedProducts = [
-      ...currentProducts,
-      product,
-    ];
+    const updatedProducts = [...currentProducts, product];
 
-    localStorage.setItem(
-      "compareProducts",
-      JSON.stringify(updatedProducts)
-    );
+    localStorage.setItem("compareProducts", JSON.stringify(updatedProducts));
 
     setCompareProducts(updatedProducts);
+
     setCompareCount(updatedProducts.length);
 
-    window.dispatchEvent(
-      new Event("compare-updated")
-    );
+    window.dispatchEvent(new Event("compare-updated"));
   };
 
   const handleProductsFound = (newProducts) => {
-    if (
-      !Array.isArray(newProducts) ||
-      newProducts.length === 0
-    ) {
+    if (!user) {
+      return;
+    }
+
+    if (!Array.isArray(newProducts) || newProducts.length === 0) {
       return;
     }
 
@@ -306,9 +345,11 @@ export default function Home() {
     setProducts(newProducts);
   };
 
-  const handleRecommendationFound = (
-    newRecommendation
-  ) => {
+  const handleRecommendationFound = (newRecommendation) => {
+    if (!user) {
+      return;
+    }
+
     if (!newRecommendation) {
       return;
     }
@@ -317,6 +358,10 @@ export default function Home() {
   };
 
   const handleComparisonFound = (newComparison) => {
+    if (!user) {
+      return;
+    }
+
     if (!newComparison) {
       return;
     }
@@ -337,30 +382,22 @@ export default function Home() {
               key={index}
               className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
             >
-              {typeof item === "object" &&
-              item !== null ? (
-                Object.entries(item).map(
-                  ([key, value]) => (
-                    <div
-                      key={key}
-                      className="mb-4"
-                    >
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                        {key.replace(/_/g, " ")}
-                      </p>
+              {typeof item === "object" && item !== null ? (
+                Object.entries(item).map(([key, value]) => (
+                  <div key={key} className="mb-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      {key.replace(/_/g, " ")}
+                    </p>
 
-                      <p className="mt-1 text-sm text-gray-800">
-                        {typeof value === "object"
-                          ? JSON.stringify(value)
-                          : String(value)}
-                      </p>
-                    </div>
-                  )
-                )
+                    <p className="mt-1 text-sm text-gray-800">
+                      {typeof value === "object"
+                        ? JSON.stringify(value)
+                        : String(value)}
+                    </p>
+                  </div>
+                ))
               ) : (
-                <p className="text-gray-700">
-                  {String(item)}
-                </p>
+                <p className="text-gray-700">{String(item)}</p>
               )}
             </div>
           ))}
@@ -368,39 +405,30 @@ export default function Home() {
       );
     }
 
-    if (
-      typeof comparison === "object" &&
-      comparison !== null
-    ) {
+    if (typeof comparison === "object" && comparison !== null) {
       return (
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
           <div className="divide-y divide-gray-200">
-            {Object.entries(comparison).map(
-              ([key, value]) => (
-                <div
-                  key={key}
-                  className="grid gap-3 px-6 py-5 md:grid-cols-[220px_1fr]"
-                >
-                  <div className="font-semibold capitalize text-gray-700">
-                    {key.replace(/_/g, " ")}
-                  </div>
-
-                  <div className="text-gray-600">
-                    {typeof value === "object" ? (
-                      <pre className="whitespace-pre-wrap text-sm">
-                        {JSON.stringify(
-                          value,
-                          null,
-                          2
-                        )}
-                      </pre>
-                    ) : (
-                      String(value)
-                    )}
-                  </div>
+            {Object.entries(comparison).map(([key, value]) => (
+              <div
+                key={key}
+                className="grid gap-3 px-6 py-5 md:grid-cols-[220px_1fr]"
+              >
+                <div className="font-semibold capitalize text-gray-700">
+                  {key.replace(/_/g, " ")}
                 </div>
-              )
-            )}
+
+                <div className="text-gray-600">
+                  {typeof value === "object" ? (
+                    <pre className="whitespace-pre-wrap text-sm">
+                      {JSON.stringify(value, null, 2)}
+                    </pre>
+                  ) : (
+                    String(value)
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -469,7 +497,6 @@ export default function Home() {
                 <h1 className="mt-5 text-5xl font-black leading-[0.9] font-extralight text-gray-950 sm:text-6xl">
                   Smart
                   <br />
-
                   <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
                     SHOPPING
                   </span>
@@ -484,12 +511,8 @@ export default function Home() {
               <div className="w-full max-w-[550px]">
                 <Chatbot
                   onProductsFound={handleProductsFound}
-                  onRecommendationFound={
-                    handleRecommendationFound
-                  }
-                  onComparisonFound={
-                    handleComparisonFound
-                  }
+                  onRecommendationFound={handleRecommendationFound}
+                  onComparisonFound={handleComparisonFound}
                 />
               </div>
             </motion.div>
@@ -546,9 +569,7 @@ export default function Home() {
         </div>
       </section>
 
-      {(products.length > 0 ||
-        recommendation ||
-        comparison) && (
+      {user && (products.length > 0 || recommendation || comparison) && (
         <main
           ref={resultsRef}
           className="scroll-mt-20 bg-gradient-to-br from-[#fffaf3] via-[#fff1fa] to-[#eef3ff] px-4 py-12"
@@ -609,7 +630,7 @@ export default function Home() {
         </main>
       )}
 
-      {selectedProduct && (
+      {user && selectedProduct && (
         <ProductModal
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
