@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import {
-  Eye,
-  EyeOff,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react";
 
 import { loginUser, registerUser } from "../services/authApi";
 import { useAuth } from "../context/AuthContext";
@@ -37,10 +32,7 @@ export default function Auth() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !isLogin &&
-      form.password !== form.confirmPassword
-    ) {
+    if (!isLogin && form.password !== form.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
@@ -73,10 +65,7 @@ export default function Auth() {
     } catch (err) {
       console.error("Authentication error:", err);
 
-      alert(
-        err.response?.data?.message ||
-          "Something went wrong"
-      );
+      alert(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -84,7 +73,7 @@ export default function Auth() {
 
   const handleGoogleLogin = () => {
     window.location.href =
-      "https://ai-multi-agent-shopping-system.onrender.app/api/auth/google";
+      "https://ai-multi-agent-shopping-system.onrender.com/api/auth/google";
   };
 
   const handleModeChange = () => {
@@ -161,16 +150,12 @@ export default function Auth() {
                 <h1 className="text-[46px] font-extralight leading-[1.05] tracking-tight text-gray-800">
                   Smart
                   <br />
-                  <span className="text-violet-500">
-                    SHOPPING
-                  </span>
+                  <span className="text-violet-500">SHOPPING</span>
                 </h1>
 
                 <p className="mt-5 max-w-sm text-[13px] leading-6 font-extralight text-gray-500">
-                  Your AI-powered shopping assistant
-                  for discovering products, comparing
-                  options and making smarter buying
-                  decisions.
+                  Your AI-powered shopping assistant for discovering products,
+                  comparing options and making smarter buying decisions.
                 </p>
               </div>
             </div>
@@ -192,9 +177,7 @@ export default function Auth() {
             <section className="w-full max-w-[390px]">
               <div className="mb-6">
                 <h2 className="text-[31px] font-extralight tracking-tight text-gray-800">
-                  {isLogin
-                    ? "Welcome Back"
-                    : "Create Account"}
+                  {isLogin ? "Welcome Back" : "Create Account"}
                 </h2>
 
                 <p className="mt-1.5 text-[13px] font-extralight text-gray-400">
@@ -204,10 +187,7 @@ export default function Auth() {
                 </p>
               </div>
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-3.5"
-              >
+              <form onSubmit={handleSubmit} className="space-y-3.5">
                 {!isLogin && (
                   <div>
                     <label className="mb-1.5 block text-[11px] font-extralight text-gray-500">
@@ -283,11 +263,7 @@ export default function Auth() {
 
                   <div className="relative">
                     <input
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       placeholder="Enter your password"
                       value={form.password}
@@ -316,11 +292,7 @@ export default function Auth() {
 
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowPassword(
-                          (previous) => !previous
-                        )
-                      }
+                      onClick={() => setShowPassword((previous) => !previous)}
                       className="
                         absolute
                         right-3.5
@@ -331,11 +303,7 @@ export default function Auth() {
                         transition
                       "
                     >
-                      {showPassword ? (
-                        <EyeOff size={17} />
-                      ) : (
-                        <Eye size={17} />
-                      )}
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
                   </div>
                 </div>
@@ -347,11 +315,7 @@ export default function Auth() {
                     </label>
 
                     <input
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       name="confirmPassword"
                       placeholder="Confirm your password"
                       value={form.confirmPassword}
@@ -404,9 +368,7 @@ export default function Auth() {
                     "Please wait..."
                   ) : (
                     <>
-                      {isLogin
-                        ? "Sign In"
-                        : "Create Account"}
+                      {isLogin ? "Sign In" : "Create Account"}
 
                       <ArrowRight size={16} />
                     </>
@@ -469,9 +431,7 @@ export default function Auth() {
                     transition
                   "
                 >
-                  {isLogin
-                    ? "Create Account"
-                    : "Login"}
+                  {isLogin ? "Create Account" : "Login"}
                 </button>
               </p>
 
@@ -480,8 +440,8 @@ export default function Auth() {
                 <span className="text-violet-500 cursor-pointer hover:underline">
                   {" "}
                   Terms of Service
-                </span>
-                {" "}and
+                </span>{" "}
+                and
                 <span className="text-violet-500 cursor-pointer hover:underline">
                   {" "}
                   Privacy Policy
